@@ -1,0 +1,68 @@
+html {
+  height: 100%;
+}
+img, object, embed, video {
+  max-width: 100%;
+}
+header {
+  margin-bottom: 10px;
+  width: 96%;
+}
+
+header img {
+  width: 100%;
+}
+
+body {
+  margin-left: auto;
+  margin-right: auto;
+  width: 81.9%;
+  padding-left: 4.55%;
+  padding-right: 4.55%;
+  clear: none;
+  float: none;
+  min-height: 100%;
+}
+
+/* =============================================
+  Tablet layout styles used by devices
+  481px to 768px and cascaded to larger 
+  devices.
+   =============================================
+*/
+
+@media only screen and (min-width: 481px) {
+body {
+  width: 91.14%;
+  padding-left: 0.93%;
+  padding-right: 0.93%;
+  clear: none;
+  float: none;
+  margin-left: auto;
+}
+
+
+}
+
+/* =============================================
+  Desktop layout styles used by  devices
+  769px and larger.
+   =============================================
+*/
+
+@media only screen and (min-width: 769px) {
+html {
+  margin: 0px auto;
+}
+body {
+  width: 88.2%;
+  max-width: 800px;
+  padding-left: 0.9%;
+  padding-right: 0.9%;
+  margin: auto;
+  clear: none;
+  float: none;
+  margin-left: auto;
+}
+
+}
