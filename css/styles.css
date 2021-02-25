@@ -1,0 +1,27 @@
+body {
+	background-color: powderblue;
+
+	margin: auto;
+  	width: 50%;
+  	padding: 10px;
+}
+
+#txt {
+	color: white;
+	text-align: center;
+	font-family: verdana;
+	font-size: 48px;
+
+}
+
+marquee {
+	width:800px; 
+	height:600px;
+	border:solid;
+
+}
+
+h1 {
+	font-family: Helvetica;
+
+}
