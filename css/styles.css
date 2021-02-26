@@ -1,9 +1,8 @@
 body {
 	background-color: powderblue;
-
-	margin: auto;
-  	width: 50%;
-  	padding: 10px;
+	max-width: 100%;
+	height: auto;
+	
 }
 
 #txt {
@@ -15,13 +14,21 @@ body {
 }
 
 marquee {
-	width:800px; 
-	height:600px;
 	border:solid;
+	max-height: 100%;
+	height: auto;
+
 
 }
 
 h1 {
 	font-family: Helvetica;
+	margin: auto;
+  	width: 30%;
+  	padding: 10px;
+
+}
+
+p {
 
 }
