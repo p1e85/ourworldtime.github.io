@@ -1,17 +1,16 @@
-// This function sets up all the Hammer.js gesture listeners.
 function setupGestures() {
     const clockContainer = document.getElementById('clock-container');
     const hammer = new Hammer(clockContainer);
     
-    // Enable all swipe directions
     hammer.get('swipe').set({ direction: Hammer.DIRECTION_ALL });
 
     // SWIPE RIGHT
     hammer.on('swiperight', () => {
-        isLocalTime = false; // We are now navigating the list
+        isLocalTime = false;
         currentIndex = (currentIndex - 1 + timeZones.length) % timeZones.length;
-        displayTimeForZone(timeZones[currentIndex]); // Update immediately
-        startClock(); // Re-sync the clock
+        displayTimeForZone(timeZones[currentIndex]);
+        startClock();
+        updateDialPosition(); // Sync the dial
     });
 
     // SWIPE LEFT
@@ -20,6 +19,7 @@ function setupGestures() {
         currentIndex = (currentIndex + 1) % timeZones.length;
         displayTimeForZone(timeZones[currentIndex]);
         startClock();
+        updateDialPosition(); // Sync the dial
     });
 
     // SWIPE DOWN
@@ -27,6 +27,14 @@ function setupGestures() {
         isLocalTime = true;
         displayLocalTime();
         startClock();
+
+        // Also move the dial to the local time zone's position
+        const localIana = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        const localIndex = timeZones.findIndex(tz => tz.iana === localIana);
+        if (localIndex !== -1) {
+            currentIndex = localIndex;
+            updateDialPosition();
+        }
     });
 
     // SWIPE UP (Favorite)
@@ -56,6 +64,4 @@ function setupGestures() {
     });
 }
 
-// --- INITIALIZATION ---
-// Wait for the page to be fully loaded before setting up gestures.
 document.addEventListener('DOMContentLoaded', setupGestures);
