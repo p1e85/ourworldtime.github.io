@@ -29,19 +29,29 @@ let currentIndex;
 let isLocalTime = true;
 let clockInterval;
 
-const cityNameElement = document.getElementById('city-name');
+const cityNameTextElement = document.getElementById('city-name-text');
 const timeDisplayElement = document.getElementById('time-display');
 const utcOffsetElement = document.getElementById('utc-offset');
+const mainFavoriteIcon = document.getElementById('main-favorite-icon');
 const dialContainer = document.getElementById('dial-container');
 const dialTrack = document.getElementById('dial-track');
+const toastElement = document.getElementById('toast-notification');
 
 function displayTimeForZone(zone) {
     const options = { timeZone: zone.iana, hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
     const timeString = new Date().toLocaleTimeString('en-US', options);
     
-    cityNameElement.textContent = zone.name;
+    cityNameTextElement.textContent = zone.name;
     timeDisplayElement.textContent = timeString;
     utcOffsetElement.textContent = zone.offset;
+    
+    // Show/hide the main favorite icon
+    const favoriteIana = localStorage.getItem('favoriteTimeZone');
+    if (favoriteIana === zone.iana) {
+        mainFavoriteIcon.classList.remove('hidden');
+    } else {
+        mainFavoriteIcon.classList.add('hidden');
+    }
     
     const hour = parseInt(timeString.substring(0, 2));
     updateBackground(hour);
@@ -51,9 +61,7 @@ function displayLocalTime() {
     const localIana = Intl.DateTimeFormat().resolvedOptions().timeZone;
     let localZone = timeZones.find(tz => tz.iana === localIana);
     
-    if (!localZone) {
-        localZone = { name: "Your Local Time", iana: localIana, offset: "" };
-    }
+    if (!localZone) localZone = { name: "Your Local Time", iana: localIana, offset: "" };
     
     displayTimeForZone(localZone);
 }
@@ -70,7 +78,6 @@ function updateBackground(hour) {
 
 function startClock() {
     if (clockInterval) clearInterval(clockInterval);
-
     clockInterval = setInterval(() => {
         if (isLocalTime) {
             displayLocalTime();
@@ -80,36 +87,38 @@ function startClock() {
     }, 1000);
 }
 
-// --- NEW DIAL FUNCTIONS ---
-
-// Moves the dial track to center the active item
 function updateDialPosition() {
-    const itemWidth = 200; // Must match the width in CSS
+    const itemWidth = 200;
     const containerWidth = dialContainer.offsetWidth;
     const offset = (containerWidth / 2) - (itemWidth / 2) - (currentIndex * itemWidth);
     
     dialTrack.style.transform = `translateX(${offset}px)`;
 
-    // Update the 'active' class on dial items
     const allItems = document.querySelectorAll('.dial-item');
+    const favoriteIana = localStorage.getItem('favoriteTimeZone');
     allItems.forEach((item, index) => {
-        if (index === currentIndex) {
-            item.classList.add('active');
-        } else {
-            item.classList.remove('active');
-        }
+        item.classList.toggle('active', index === currentIndex);
+        const star = item.querySelector('.dial-favorite-star');
+        star.classList.toggle('hidden', timeZones[index].iana !== favoriteIana);
     });
 }
 
-// Creates the dial items from the timeZones array
 function buildDial() {
     timeZones.forEach((zone, index) => {
         const item = document.createElement('div');
         item.className = 'dial-item';
-        item.textContent = zone.name;
-        item.dataset.index = index; // Store the index for easy lookup
+        item.dataset.index = index;
 
-        // Add click listener to each item
+        const star = document.createElement('span');
+        star.className = 'dial-favorite-star hidden';
+        star.textContent = '⭐';
+
+        const name = document.createElement('span');
+        name.textContent = zone.name;
+        
+        item.appendChild(star);
+        item.appendChild(name);
+
         item.addEventListener('click', () => {
             isLocalTime = false;
             currentIndex = index;
@@ -117,15 +126,25 @@ function buildDial() {
             updateDialPosition();
             startClock();
         });
-
         dialTrack.appendChild(item);
     });
 }
 
-// --- INITIALIZATION ---
+// NEW: Shows a message in a toast notification
+function showToast(message) {
+    toastElement.textContent = message;
+    toastElement.classList.remove('hidden');
+    toastElement.style.animation = 'fadeinout 4s ease-in-out';
+    
+    // Hide the element after the animation is done
+    setTimeout(() => {
+        toastElement.classList.add('hidden');
+        toastElement.style.animation = 'none'; // Reset animation
+    }, 4000);
+}
 
 document.addEventListener('DOMContentLoaded', () => {
-    buildDial(); // Create the dial items first
+    buildDial();
 
     const savedFavoriteIana = localStorage.getItem('favoriteTimeZone');
     let initialIndex = -1;
@@ -139,14 +158,13 @@ document.addEventListener('DOMContentLoaded', () => {
         isLocalTime = true;
         const localIana = Intl.DateTimeFormat().resolvedOptions().timeZone;
         initialIndex = timeZones.findIndex(tz => tz.iana === localIana);
-        if (initialIndex === -1) initialIndex = 11; // Default to London if local not found
-        
+        if (initialIndex === -1) initialIndex = 11;
         displayLocalTime();
     } else {
         displayTimeForZone(timeZones[initialIndex]);
     }
     
     currentIndex = initialIndex;
-    updateDialPosition(); // Set the initial position of the dial
+    updateDialPosition();
     startClock();
 });
