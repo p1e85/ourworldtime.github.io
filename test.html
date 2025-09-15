@@ -1,6 +1,7 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Our World Time</title>
 	
@@ -8,37 +9,43 @@
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 	<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;700&display=swap" rel="stylesheet">
 	
-	<link rel="stylesheet" href="css/teststyles.css">
+	<link rel="stylesheet" href="css/styles.css">
 	<link rel="stylesheet" href="css/responsive.css">
 </head>
 
 <body>
 
-<h1>Our World Time</h1>
+    <div class="ad-layout-container">
 
-<div id="clock-container">
-    <div id="clock-info-wrapper">
-        <div class="city-display">
-            <h2 id="city-name-text"></h2>
-            <span id="main-favorite-icon" class="hidden">⭐</span>
+        <h1>Our World Time</h1>
+
+        <div id="clock-container">
+            <div id="clock-info-wrapper">
+                <div class="city-display">
+                    <h2 id="city-name-text"></h2>
+                    <span id="main-favorite-icon" class="hidden">⭐</span>
+                </div>
+                <div id="time-display"></div>
+                <p id="date-display"></p>
+                <p id="utc-offset"></p>
+            </div>
         </div>
-        <div id="time-display"></div>
-        <p id="date-display"></p>
-        <p id="utc-offset"></p>
+
+        </div>
+
+    <div id="dial-container">
+        <div id="dial-pointer"></div>
+        <div id="dial-track"></div>
     </div>
-</div>
 
-<div id="dial-container">
-    <div id="dial-pointer"></div>
-    <div id="dial-track"></div>
-</div>
-
-<div id="toast-notification" class="hidden"></div>
+    <div id="toast-notification" class="hidden"></div>
+    
+    <div id="view-counter"></div>
 
 </body>
 
 <footer>
-    <script src="js/testtime.js"></script>
+    <script src="js/time.js"></script>
 	<script src="js/gestures.js"></script>
 	<script src="https://hammerjs.github.io/dist/hammer.min.js"></script>
 </footer>
