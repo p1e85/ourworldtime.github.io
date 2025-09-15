@@ -2,7 +2,14 @@ body {
 	background-color: powderblue;
 	max-width: 100%;
 	height: auto;
-	
+}
+
+/* Container for the clock animation */
+#clock-container {
+	border: 2px solid black;
+	height: 600px;
+	overflow: hidden; /* Hides the text as it moves outside the box */
+	position: relative; /* Establishes a positioning context for the child element */
 }
 
 #txt {
@@ -10,15 +17,21 @@ body {
 	text-align: center;
 	font-family: verdana;
 	font-size: 48px;
-
+	
+	/* CSS Animation Properties */
+	position: absolute;
+	width: 100%;
+	animation: scrollUp 15s linear infinite;
 }
 
-marquee {
-	border:solid;
-	max-height: 100%;
-	height: 600px;
-
-
+/* Defines the scrolling animation from bottom to top */
+@keyframes scrollUp {
+  from {
+    top: 100%; /* Start from just below the container */
+  }
+  to {
+    top: -50px; /* End just above the container */
+  }
 }
 
 h1 {
@@ -26,6 +39,4 @@ h1 {
 	margin: auto;
   	width: 30%;
   	padding: 10px;
-
 }
-
