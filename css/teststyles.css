@@ -1,0 +1,70 @@
+@keyframes animateGradient {
+	0% { background-position: 0% 50%; }
+	50% { background-position: 100% 50%; }
+	100% { background-position: 0% 50%; }
+}
+
+body {
+	background-size: 400% 400%;
+	animation: animateGradient 20s ease infinite;
+	transition: background 2s ease-in-out;
+	max-width: 100%;
+	min-height: 100vh;
+	margin: 0;
+	color: white;
+	text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+/* Time-of-Day Gradient Classes */
+body.morning { background: linear-gradient(-45deg, #f8cdda, #a5d3f2, #f5e6a8); }
+body.day { background: linear-gradient(-45deg, #89d8f8, #c4e9f8, #f0f8ff); }
+body.evening { background: linear-gradient(-45deg, #7b68b6, #e47ec7, #f7ac83); }
+body.night { background: linear-gradient(-45deg, #0f2027, #203a43, #2c5364); }
+
+#clock-container {
+	border: 2px solid rgba(255, 255, 255, 0.5);
+	height: 600px;
+	border-radius: 15px;
+	background: rgba(0, 0, 0, 0.2);
+	backdrop-filter: blur(5px);
+	
+	/* Use Flexbox to center the content */
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	text-align: center;
+}
+
+/* NEW STYLES FOR THE CLOCK DISPLAY */
+#city-name {
+	font-family: 'Cormorant Garamond', serif;
+	font-weight: 400;
+	font-size: 2.5em;
+	margin: 0;
+}
+
+#time-display {
+	font-family: 'Cormorant Garamond', serif;
+	font-weight: 700;
+	font-size: 6em; /* 96px */
+	letter-spacing: 2px;
+	margin: 10px 0;
+}
+
+#utc-offset {
+	font-family: sans-serif; /* A simple font for the technical offset */
+	font-size: 1.2em;
+	opacity: 0.8;
+	margin: 0;
+}
+
+h1 {
+	font-family: 'Cormorant Garamond', serif;
+	font-weight: 400;
+	text-align: center;
+	width: 100%;
+  	padding: 20px 10px;
+	margin: 0 auto;
+	font-size: 2.5em;
+}
