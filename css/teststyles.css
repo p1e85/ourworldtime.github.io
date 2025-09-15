@@ -53,13 +53,11 @@ body.night { background: linear-gradient(-45deg, #0f2027, #203a43, #2c5364); }
 .slide-out { animation: slideOutUp 0.3s forwards ease-in; }
 .slide-in { animation: slideInUp 0.3s forwards ease-out; }
 
-/* --- FIXED STYLES for Centering --- */
 .city-display {
     display: flex;
     align-items: center;
     justify-content: center;
-    position: relative; /* ADDED: To position the star correctly */
-    padding: 0 50px; /* Add some padding so the star has room */
+    position: relative;
 }
 
 #city-name-text {
@@ -69,11 +67,12 @@ body.night { background: linear-gradient(-45deg, #0f2027, #203a43, #2c5364); }
     margin: 0;
 }
 
+/* --- FIXED STYLES for Icon Position --- */
 #main-favorite-icon {
-    font-size: 1.5em; /* Adjusted size slightly */
+    font-size: 1.5em;
     transition: opacity 0.3s ease;
-    position: absolute; /* ADDED: Takes the star out of the layout flow */
-    right: 0; /* CHANGED: Positions the star on the far right */
+    position: absolute;
+    left: 40px; /* MOVED from right to left with some padding */
 }
 /* --- END OF FIX --- */
 
