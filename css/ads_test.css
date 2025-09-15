@@ -38,10 +38,10 @@ body.night { background: linear-gradient(-45deg, #0f2027, #203a43, #2c5364); }
 /* --- Core Grid Layout --- */
 .ad-layout-container {
     display: grid;
-    grid-template-columns: 200px 1fr 200px;
+    grid-template-columns: 175px 1fr 315px; /* Adjusted for ad sizes */
     grid-template-rows: auto 1fr auto;
     gap: 15px;
-    height: calc(100vh - 100px); /* Full height minus padding and dial space */
+    height: calc(100vh - 115px); /* Adjusted for dial and title space */
     
     grid-template-areas:
         "title        title        title"
@@ -60,7 +60,7 @@ h1 {
     margin: 0 0 10px 0;
     font-size: 2.5em;
 }
-#ad-slot-skyscraper { grid-area: skyscraper; }
+
 #clock-container { grid-area: clock; }
 .right-column-ads { 
     grid-area: box-ads; 
@@ -69,12 +69,21 @@ h1 {
     justify-content: space-around;
     gap: 15px;
 }
-#ad-slot-bottom-banner { grid-area: bottom-banner; }
+
+/* --- START: MISSING RULES ADDED --- */
+#ad-slot-skyscraper { 
+    grid-area: skyscraper; 
+}
+#ad-slot-bottom-banner { 
+    grid-area: bottom-banner; 
+}
+/* --- END: MISSING RULES ADDED --- */
+
 
 /* --- Clock Container (Main App) --- */
 #clock-container {
 	border: 2px solid rgba(255, 255, 255, 0.5);
-	height: 100%; /* Allow it to fill the grid cell */
+	height: 100%;
     min-height: 600px;
 	border-radius: 15px;
 	background: rgba(0, 0, 0, 0.2);
