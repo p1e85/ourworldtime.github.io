@@ -33,8 +33,8 @@ function setupGestures() {
             localStorage.setItem('favoriteTimeZone', currentZone.iana);
             showToast(`⭐ Favorite set to ${currentZone.name}.`);
         }
-        updateStaticInfo(currentZone); // Instantly update star on main display
-        updateDialPosition(); // Instantly update star on dial
+        updateStaticInfo(currentZone);
+        updateDialPosition();
     });
 }
 
