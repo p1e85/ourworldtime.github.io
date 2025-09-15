@@ -1,0 +1,85 @@
+body {
+    background-color: #2c3e50; /* A dark background for contrast */
+    color: white;
+    font-family: sans-serif;
+    margin: 0;
+    padding: 15px;
+    min-height: 100vh;
+    box-sizing: border-box;
+}
+
+/* --- Core Grid Layout --- */
+.ad-layout-container {
+    display: grid;
+    /* Define 3 columns: left side, flexible center, right side */
+    grid-template-columns: 175px 1fr 315px;
+    /* Define rows for the content */
+    grid-template-rows: auto 1fr;
+    gap: 15px;
+    height: 95vh;
+    
+    /* Define the areas for our content */
+    grid-template-areas:
+        "top-banner   top-banner   top-banner"
+        "skyscraper   clock        box-ads";
+}
+
+/* --- Assigning Content to Grid Areas --- */
+#ad-slot-top-banner { grid-area: top-banner; }
+#ad-slot-skyscraper { grid-area: skyscraper; }
+#clock-container-placeholder { grid-area: clock; }
+
+/* The two box ads need their own container to stack vertically */
+#ad-slot-box-1, #ad-slot-box-2 {
+    /* This will automatically place them in the 'box-ads' area defined below */
+}
+
+/* We create an anonymous container for the box ads */
+.ad-layout-container > div:nth-of-type(4) {
+    grid-area: box-ads;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+
+/* --- Styling for the Placeholders --- */
+.ad-slot {
+    background-color: #34495e;
+    border-radius: 8px;
+    border: 2px dashed #7f8c8d;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+.ad-slot img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
+#clock-container-placeholder {
+    background-color: rgba(0, 0, 0, 0.2);
+    border: 2px solid #95a5a6;
+    border-radius: 15px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    text-align: center;
+}
+
+#clock-container-placeholder h1 {
+    margin: 0;
+    color: #ecf0f1;
+}
+
+#clock-container-placeholder #time-display {
+    font-size: 5em;
+    font-weight: bold;
+    margin: 20px 0;
+    color: white;
+}
