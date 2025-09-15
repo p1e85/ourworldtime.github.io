@@ -1,4 +1,3 @@
-// A constant list of our 24 chosen time zones
 const timeZones = [
     { name: "Samoa, Midway", iana: "Pacific/Samoa", offset: "UTC-11" },
     { name: "Hawaii, Honolulu", iana: "Pacific/Honolulu", offset: "UTC-10" },
@@ -26,19 +25,16 @@ const timeZones = [
     { name: "Auckland, Fiji", iana: "Pacific/Auckland", offset: "UTC+12" }
 ];
 
-// --- STATE VARIABLES ---
 let currentIndex;
-let isLocalTime = true; // Track if we are showing local time or a list time zone
-let clockInterval; // To hold our setInterval reference
+let isLocalTime = true;
+let clockInterval;
 
-// --- DOM ELEMENTS ---
 const cityNameElement = document.getElementById('city-name');
 const timeDisplayElement = document.getElementById('time-display');
 const utcOffsetElement = document.getElementById('utc-offset');
+const dialContainer = document.getElementById('dial-container');
+const dialTrack = document.getElementById('dial-track');
 
-// --- FUNCTIONS ---
-
-// Displays the time for a given time zone object
 function displayTimeForZone(zone) {
     const options = { timeZone: zone.iana, hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
     const timeString = new Date().toLocaleTimeString('en-US', options);
@@ -51,7 +47,6 @@ function displayTimeForZone(zone) {
     updateBackground(hour);
 }
 
-// Displays the user's local time
 function displayLocalTime() {
     const localIana = Intl.DateTimeFormat().resolvedOptions().timeZone;
     let localZone = timeZones.find(tz => tz.iana === localIana);
@@ -73,7 +68,6 @@ function updateBackground(hour) {
     if (body.className !== newClass) { body.className = newClass; }
 }
 
-// Main loop that updates the clock every second
 function startClock() {
     if (clockInterval) clearInterval(clockInterval);
 
@@ -86,9 +80,53 @@ function startClock() {
     }, 1000);
 }
 
+// --- NEW DIAL FUNCTIONS ---
+
+// Moves the dial track to center the active item
+function updateDialPosition() {
+    const itemWidth = 200; // Must match the width in CSS
+    const containerWidth = dialContainer.offsetWidth;
+    const offset = (containerWidth / 2) - (itemWidth / 2) - (currentIndex * itemWidth);
+    
+    dialTrack.style.transform = `translateX(${offset}px)`;
+
+    // Update the 'active' class on dial items
+    const allItems = document.querySelectorAll('.dial-item');
+    allItems.forEach((item, index) => {
+        if (index === currentIndex) {
+            item.classList.add('active');
+        } else {
+            item.classList.remove('active');
+        }
+    });
+}
+
+// Creates the dial items from the timeZones array
+function buildDial() {
+    timeZones.forEach((zone, index) => {
+        const item = document.createElement('div');
+        item.className = 'dial-item';
+        item.textContent = zone.name;
+        item.dataset.index = index; // Store the index for easy lookup
+
+        // Add click listener to each item
+        item.addEventListener('click', () => {
+            isLocalTime = false;
+            currentIndex = index;
+            displayTimeForZone(timeZones[currentIndex]);
+            updateDialPosition();
+            startClock();
+        });
+
+        dialTrack.appendChild(item);
+    });
+}
+
 // --- INITIALIZATION ---
 
 document.addEventListener('DOMContentLoaded', () => {
+    buildDial(); // Create the dial items first
+
     const savedFavoriteIana = localStorage.getItem('favoriteTimeZone');
     let initialIndex = -1;
 
@@ -99,11 +137,16 @@ document.addEventListener('DOMContentLoaded', () => {
     
     if (initialIndex === -1) {
         isLocalTime = true;
+        const localIana = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        initialIndex = timeZones.findIndex(tz => tz.iana === localIana);
+        if (initialIndex === -1) initialIndex = 11; // Default to London if local not found
+        
         displayLocalTime();
     } else {
-        currentIndex = initialIndex;
-        displayTimeForZone(timeZones[currentIndex]);
+        displayTimeForZone(timeZones[initialIndex]);
     }
     
+    currentIndex = initialIndex;
+    updateDialPosition(); // Set the initial position of the dial
     startClock();
 });
