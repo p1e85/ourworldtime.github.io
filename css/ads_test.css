@@ -101,7 +101,17 @@ h1 {
 
 /* --- AD SLOT STYLES --- */
 .ad-slot { background-color: rgba(0, 0, 0, 0.1); border-radius: 8px; border: 2px dashed #7f8c8d; display: flex; justify-content: center; align-items: center; overflow: hidden; }
-.ad-slot img { max-width: 100%; height: auto; display: block; }
+
+/* --- START: CORRECTED IMAGE SIZING --- */
+.ad-slot img {
+    width: 100%; /* ADDED: Force image to take the full width of the slot */
+    height: 100%; /* ADDED: Force image to take the full height of the slot */
+    object-fit: cover; /* ADDED: Scale image to cover the area without distortion */
+    max-width: 100%;
+    display: block;
+}
+/* --- END: CORRECTION --- */
+
 
 /* --- DIAL & TOAST STYLES (Unchanged) --- */
 #dial-container { position: fixed; bottom: 0; left: 0; right: 0; height: 70px; background: rgba(0, 0, 0, 0.25); backdrop-filter: blur(8px); border-top: 1px solid rgba(255, 255, 255, 0.2); overflow: hidden; display: flex; align-items: center; user-select: none; }
@@ -114,29 +124,3 @@ h1 {
 #toast-notification.show { animation: fadeinout 4s ease-in-out; }
 
 .hidden { opacity: 0; visibility: hidden; transition: opacity 0.3s ease, visibility 0.3s ease; }
-
-/* =============================================
-  Base styles for all devices
-   =============================================
-*/
-html {
-  height: 100%;
-}
-img, object, embed, video {
-  max-width: 100%;
-}
-
-
-/* All layout is now handled by the CSS Grid in styles.css.
-  The old body width constraints have been removed to allow the ad layout
-  to be full-width as intended. You can add mobile-specific grid adjustments here
-  in the future if needed.
-*/
-
-@media only screen and (max-width: 768px) {
-    #time-display {
-        font-size: 15vw; /* Make font larger on smaller screens */
-    }
-
-    /* Future mobile-specific grid styles could go here */
-}
