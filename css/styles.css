@@ -1,42 +1,74 @@
-body {
-	background-color: powderblue;
-	max-width: 100%;
-	height: auto;
+/* Define the keyframes for our animated gradient */
+@keyframes animateGradient {
+	0% { background-position: 0% 50%; }
+	50% { background-position: 100% 50%; }
+	100% { background-position: 0% 50%; }
 }
 
-/* Container for the clock animation */
+body {
+	/* The background is now set by one of the classes below */
+	background-size: 400% 400%;
+	animation: animateGradient 20s ease infinite;
+	
+	/* Smoothly transition between gradients when the class changes */
+	transition: background 2s ease-in-out;
+	
+	max-width: 100%;
+	min-height: 100vh; /* Ensure body covers full viewport height */
+	margin: 0;
+}
+
+/* Time-of-Day Gradient Classes */
+body.morning {
+	background: linear-gradient(-45deg, #f8cdda, #a5d3f2, #f5e6a8);
+}
+body.day {
+	background: linear-gradient(-45deg, #89d8f8, #c4e9f8, #f0f8ff);
+}
+body.evening {
+	background: linear-gradient(-45deg, #7b68b6, #e47ec7, #f7ac83);
+}
+body.night {
+	background: linear-gradient(-45deg, #0f2027, #203a43, #2c5364);
+}
+
+
 #clock-container {
-	border: 2px solid black;
+	border: 2px solid rgba(255, 255, 255, 0.5); /* Softened the border */
 	height: 600px;
-	overflow: hidden; /* Hides the text as it moves outside the box */
-	position: relative; /* Establishes a positioning context for the child element */
+	overflow: hidden;
+	position: relative;
+	border-radius: 15px; /* Added rounded corners */
+	background: rgba(0, 0, 0, 0.2); /* Slight dark overlay for readability */
+	backdrop-filter: blur(5px); /* Frosted glass effect (modern browsers) */
 }
 
 #txt {
 	color: white;
+	text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5); /* Add shadow for better readability */
 	text-align: center;
-	font-family: verdana;
-	font-size: 48px;
+	font-family: 'Cormorant Garamond', serif; /* APPLYING THE NEW FONT */
+	font-size: 58px; /* Slightly larger font */
+	font-weight: 700; /* Bolder font weight */
 	
-	/* CSS Animation Properties */
 	position: absolute;
 	width: 100%;
 	animation: scrollUp 15s linear infinite;
 }
 
-/* Defines the scrolling animation from bottom to top */
 @keyframes scrollUp {
-  from {
-    top: 100%; /* Start from just below the container */
-  }
-  to {
-    top: -50px; /* End just above the container */
-  }
+  from { top: 100%; }
+  to { top: -60px; }
 }
 
 h1 {
-	font-family: Helvetica;
-	margin: auto;
-  	width: 30%;
-  	padding: 10px;
+	font-family: 'Cormorant Garamond', serif; /* APPLYING THE NEW FONT */
+	font-weight: 400; /* Regular weight for the title */
+	color: white;
+	text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5);
+	text-align: center;
+	width: 100%; /* Make title take full width for centering */
+  	padding: 20px 10px;
+	margin: 0 auto;
+	font-size: 2.5em;
 }
