@@ -135,3 +135,29 @@ h1 {
 #toast-notification.show { animation: fadeinout 4s ease-in-out; }
 
 .hidden { opacity: 0; visibility: hidden; transition: opacity 0.3s ease, visibility 0.3s ease; }
+
+/* =============================================
+  Base styles for all devices
+   =============================================
+*/
+html {
+  height: 100%;
+}
+img, object, embed, video {
+  max-width: 100%;
+}
+
+
+/* All layout is now handled by the CSS Grid in styles.css.
+  The old body width constraints have been removed to allow the ad layout
+  to be full-width as intended. You can add mobile-specific grid adjustments here
+  in the future if needed.
+*/
+
+@media only screen and (max-width: 768px) {
+    #time-display {
+        font-size: 15vw; /* Make font larger on smaller screens */
+    }
+
+    /* Future mobile-specific grid styles could go here */
+}
