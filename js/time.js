@@ -22,7 +22,7 @@ const timeZones = [
     { name: "Tokyo, Seoul", iana: "Asia/Tokyo", offset: "UTC+9" },
     { name: "Sydney, Guam", iana: "Australia/Sydney", offset: "UTC+10" },
     { name: "Vladivostok, Solomon Is.", iana: "Asia/Vladivostok", offset: "UTC+11" },
-    { name:g "Auckland, Fiji", iana: "Pacific/Auckland", offset: "UTC+12" }
+    { name: "Auckland, Fiji", iana: "Pacific/Auckland", offset: "UTC+12" }
 ];
 
 let currentIndex;
@@ -37,13 +37,14 @@ const mainFavoriteIcon = document.getElementById('main-favorite-icon');
 const dialContainer = document.getElementById('dial-container');
 const dialTrack = document.getElementById('dial-track');
 const toastElement = document.getElementById('toast-notification');
-const viewCounterElement = document.getElementById('view-counter');
 
+// Updates only the ticking time, called every second
 function updateTime(zone) {
     const timeOptions = { timeZone: zone.iana, hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
     timeDisplayElement.textContent = new Date().toLocaleTimeString('en-US', timeOptions);
 }
 
+// Updates static info (city, date, etc.), called only when the time zone changes
 function updateStaticInfo(zone) {
     const dateOptions = { timeZone: zone.iana, weekday: 'long', month: 'long', day: 'numeric' };
     const dateString = new Date().toLocaleDateString('en-US', dateOptions);
@@ -76,16 +77,22 @@ function startClock() {
     }, 1000);
 }
 
+// NEW: Central function to handle changing time zones with animation
 function changeTimeZone(newIndex) {
     currentIndex = newIndex;
     const zone = timeZones[currentIndex];
+
     infoWrapper.classList.add('slide-out');
+    
     setTimeout(() => {
         updateStaticInfo(zone);
-        updateTime(zone);
+        updateTime(zone); // Update time immediately to prevent lag
         updateDialPosition();
+        
         infoWrapper.classList.remove('slide-out');
         infoWrapper.classList.add('slide-in');
+
+        // Clean up animation class
         setTimeout(() => infoWrapper.classList.remove('slide-in'), 300);
     }, 150);
 }
@@ -95,6 +102,7 @@ function updateDialPosition() {
     const containerWidth = dialContainer.offsetWidth;
     const offset = (containerWidth / 2) - (itemWidth / 2) - (currentIndex * itemWidth);
     dialTrack.style.transform = `translateX(${offset}px)`;
+
     const allItems = document.querySelectorAll('.dial-item');
     const favoriteIana = localStorage.getItem('favoriteTimeZone');
     allItems.forEach((item, index) => {
@@ -122,32 +130,23 @@ function buildDial() {
 
 function showToast(message) {
     toastElement.textContent = message;
-    toastElement.className = 'show';
+    toastElement.className = 'show'; // Use a dedicated class to trigger animation
     setTimeout(() => {
         toastElement.className = 'hidden';
     }, 3900);
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    // --- NEW: View Counter Logic ---
-    let viewCount = localStorage.getItem('pageViewCount');
-    if (viewCount === null) {
-        viewCount = 1;
-    } else {
-        viewCount = parseInt(viewCount) + 1;
-    }
-    localStorage.setItem('pageViewCount', viewCount);
-    viewCounterElement.textContent = `Views: ${viewCount}`;
-    // --- End of View Counter Logic ---
-
     buildDial();
     const savedFavoriteIana = localStorage.getItem('favoriteTimeZone');
     let initialIndex = timeZones.findIndex(tz => tz.iana === savedFavoriteIana);
+
     if (initialIndex === -1) {
         const localIana = Intl.DateTimeFormat().resolvedOptions().timeZone;
         initialIndex = timeZones.findIndex(tz => tz.iana === localIana);
         if (initialIndex === -1) initialIndex = 11;
     }
+
     currentIndex = initialIndex;
     updateStaticInfo(timeZones[currentIndex]);
     updateTime(timeZones[currentIndex]);
