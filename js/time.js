@@ -7,8 +7,10 @@ function startTime() {
   s = checkTime(s);
   document.getElementById('txt').innerHTML =
   h + ":" + m + ":" + s;
-  var t = setTimeout(startTime, 500);
+  // Changed timeout to 1000ms (1 second) for better efficiency
+  var t = setTimeout(startTime, 1000);
 }
+
 function checkTime(i) {
   if (i < 10) {i = "0" + i};  // add zero in front of numbers < 10
   return i;
