@@ -26,44 +26,38 @@ const timeZones = [
 ];
 
 let currentIndex;
-let isLocalTime = true;
 let clockInterval;
 
+const infoWrapper = document.getElementById('clock-info-wrapper');
 const cityNameTextElement = document.getElementById('city-name-text');
 const timeDisplayElement = document.getElementById('time-display');
+const dateDisplayElement = document.getElementById('date-display');
 const utcOffsetElement = document.getElementById('utc-offset');
 const mainFavoriteIcon = document.getElementById('main-favorite-icon');
 const dialContainer = document.getElementById('dial-container');
 const dialTrack = document.getElementById('dial-track');
 const toastElement = document.getElementById('toast-notification');
 
-function displayTimeForZone(zone) {
-    const options = { timeZone: zone.iana, hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
-    const timeString = new Date().toLocaleTimeString('en-US', options);
-    
-    cityNameTextElement.textContent = zone.name;
-    timeDisplayElement.textContent = timeString;
-    utcOffsetElement.textContent = zone.offset;
-    
-    // Show/hide the main favorite icon
-    const favoriteIana = localStorage.getItem('favoriteTimeZone');
-    if (favoriteIana === zone.iana) {
-        mainFavoriteIcon.classList.remove('hidden');
-    } else {
-        mainFavoriteIcon.classList.add('hidden');
-    }
-    
-    const hour = parseInt(timeString.substring(0, 2));
-    updateBackground(hour);
+// Updates only the ticking time, called every second
+function updateTime(zone) {
+    const timeOptions = { timeZone: zone.iana, hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
+    timeDisplayElement.textContent = new Date().toLocaleTimeString('en-US', timeOptions);
 }
 
-function displayLocalTime() {
-    const localIana = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    let localZone = timeZones.find(tz => tz.iana === localIana);
+// Updates static info (city, date, etc.), called only when the time zone changes
+function updateStaticInfo(zone) {
+    const dateOptions = { timeZone: zone.iana, weekday: 'long', month: 'long', day: 'numeric' };
+    const dateString = new Date().toLocaleDateString('en-US', dateOptions);
+
+    cityNameTextElement.textContent = zone.name;
+    dateDisplayElement.textContent = dateString;
+    utcOffsetElement.textContent = zone.offset;
+
+    const favoriteIana = localStorage.getItem('favoriteTimeZone');
+    mainFavoriteIcon.classList.toggle('hidden', favoriteIana !== zone.iana);
     
-    if (!localZone) localZone = { name: "Your Local Time", iana: localIana, offset: "" };
-    
-    displayTimeForZone(localZone);
+    const hour = parseInt(new Date().toLocaleTimeString('en-US', { timeZone: zone.iana, hour: '2-digit', hour12: false }));
+    updateBackground(hour);
 }
 
 function updateBackground(hour) {
@@ -79,27 +73,41 @@ function updateBackground(hour) {
 function startClock() {
     if (clockInterval) clearInterval(clockInterval);
     clockInterval = setInterval(() => {
-        if (isLocalTime) {
-            displayLocalTime();
-        } else {
-            displayTimeForZone(timeZones[currentIndex]);
-        }
+        updateTime(timeZones[currentIndex]);
     }, 1000);
+}
+
+// NEW: Central function to handle changing time zones with animation
+function changeTimeZone(newIndex) {
+    currentIndex = newIndex;
+    const zone = timeZones[currentIndex];
+
+    infoWrapper.classList.add('slide-out');
+    
+    setTimeout(() => {
+        updateStaticInfo(zone);
+        updateTime(zone); // Update time immediately to prevent lag
+        updateDialPosition();
+        
+        infoWrapper.classList.remove('slide-out');
+        infoWrapper.classList.add('slide-in');
+
+        // Clean up animation class
+        setTimeout(() => infoWrapper.classList.remove('slide-in'), 300);
+    }, 150);
 }
 
 function updateDialPosition() {
     const itemWidth = 200;
     const containerWidth = dialContainer.offsetWidth;
     const offset = (containerWidth / 2) - (itemWidth / 2) - (currentIndex * itemWidth);
-    
     dialTrack.style.transform = `translateX(${offset}px)`;
 
     const allItems = document.querySelectorAll('.dial-item');
     const favoriteIana = localStorage.getItem('favoriteTimeZone');
     allItems.forEach((item, index) => {
         item.classList.toggle('active', index === currentIndex);
-        const star = item.querySelector('.dial-favorite-star');
-        star.classList.toggle('hidden', timeZones[index].iana !== favoriteIana);
+        item.querySelector('.dial-favorite-star').classList.toggle('hidden', timeZones[index].iana !== favoriteIana);
     });
 }
 
@@ -108,63 +116,40 @@ function buildDial() {
         const item = document.createElement('div');
         item.className = 'dial-item';
         item.dataset.index = index;
-
         const star = document.createElement('span');
         star.className = 'dial-favorite-star hidden';
         star.textContent = '⭐';
-
         const name = document.createElement('span');
         name.textContent = zone.name;
-        
         item.appendChild(star);
         item.appendChild(name);
-
-        item.addEventListener('click', () => {
-            isLocalTime = false;
-            currentIndex = index;
-            displayTimeForZone(timeZones[currentIndex]);
-            updateDialPosition();
-            startClock();
-        });
+        item.addEventListener('click', () => changeTimeZone(index));
         dialTrack.appendChild(item);
     });
 }
 
-// NEW: Shows a message in a toast notification
 function showToast(message) {
     toastElement.textContent = message;
-    toastElement.classList.remove('hidden');
-    toastElement.style.animation = 'fadeinout 4s ease-in-out';
-    
-    // Hide the element after the animation is done
+    toastElement.className = 'show'; // Use a dedicated class to trigger animation
     setTimeout(() => {
-        toastElement.classList.add('hidden');
-        toastElement.style.animation = 'none'; // Reset animation
-    }, 4000);
+        toastElement.className = 'hidden';
+    }, 3900);
 }
 
 document.addEventListener('DOMContentLoaded', () => {
     buildDial();
-
     const savedFavoriteIana = localStorage.getItem('favoriteTimeZone');
-    let initialIndex = -1;
+    let initialIndex = timeZones.findIndex(tz => tz.iana === savedFavoriteIana);
 
-    if (savedFavoriteIana) {
-        isLocalTime = false;
-        initialIndex = timeZones.findIndex(tz => tz.iana === savedFavoriteIana);
-    } 
-    
     if (initialIndex === -1) {
-        isLocalTime = true;
         const localIana = Intl.DateTimeFormat().resolvedOptions().timeZone;
         initialIndex = timeZones.findIndex(tz => tz.iana === localIana);
         if (initialIndex === -1) initialIndex = 11;
-        displayLocalTime();
-    } else {
-        displayTimeForZone(timeZones[initialIndex]);
     }
-    
+
     currentIndex = initialIndex;
+    updateStaticInfo(timeZones[currentIndex]);
+    updateTime(timeZones[currentIndex]);
     updateDialPosition();
     startClock();
 });
