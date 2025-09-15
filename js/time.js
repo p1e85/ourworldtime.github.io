@@ -1,28 +1,28 @@
 const timeZones = [
-    { name: "Samoa, Midway", iana: "Pacific/Samoa", offset: "UTC-11" },
-    { name: "Hawaii, Honolulu", iana: "Pacific/Honolulu", offset: "UTC-10" },
-    { name: "Alaska, Anchorage", iana: "America/Anchorage", offset: "UTC-9" },
-    { name: "Los Angeles, Vancouver", iana: "America/Los_Angeles", offset: "UTC-8" },
-    { name: "Denver, Phoenix", iana: "America/Denver", offset: "UTC-7" },
-    { name: "Chicago, Mexico City", iana: "America/Chicago", offset: "UTC-6" },
-    { name: "New York, Lima", iana: "America/New_York", offset: "UTC-5" },
-    { name: "Halifax, Santiago", iana: "America/Halifax", offset: "UTC-4" },
-    { name: "São Paulo, Buenos Aires", iana: "America/Sao_Paulo", offset: "UTC-3" },
-    { name: "South Georgia", iana: "Atlantic/South_Georgia", offset: "UTC-2" },
-    { name: "Azores, Cape Verde", iana: "Atlantic/Azores", offset: "UTC-1" },
-    { name: "London, Dublin", iana: "Europe/London", offset: "UTC+0" },
-    { name: "Paris, Rome", iana: "Europe/Paris", offset: "UTC+1" },
-    { name: "Cairo, Johannesburg", iana: "Africa/Cairo", offset: "UTC+2" },
-    { name: "Moscow, Istanbul", iana: "Europe/Moscow", offset: "UTC+3" },
-    { name: "Dubai, Baku", iana: "Asia/Dubai", offset: "UTC+4" },
-    { name: "Karachi, Tashkent", iana: "Asia/Karachi", offset: "UTC+5" },
-    { name: "Dhaka, Almaty", iana: "Asia/Dhaka", offset: "UTC+6" },
-    { name: "Bangkok, Jakarta", iana: "Asia/Bangkok", offset: "UTC+7" },
-    { name: "Shanghai, Perth", iana: "Asia/Shanghai", offset: "UTC+8" },
-    { name: "Tokyo, Seoul", iana: "Asia/Tokyo", offset: "UTC+9" },
-    { name: "Sydney, Guam", iana: "Australia/Sydney", offset: "UTC+10" },
-    { name: "Vladivostok, Solomon Is.", iana: "Asia/Vladivostok", offset: "UTC+11" },
-    { name: "Auckland, Fiji", iana: "Pacific/Auckland", offset: "UTC+12" }
+    { name: "Samoa, Midway", iana: "Pacific/Samoa" },
+    { name: "Hawaii, Honolulu", iana: "Pacific/Honolulu" },
+    { name: "Alaska, Anchorage", iana: "America/Anchorage" },
+    { name: "Los Angeles, Vancouver", iana: "America/Los_Angeles" },
+    { name: "Denver, Phoenix", iana: "America/Denver" },
+    { name: "Chicago, Mexico City", iana: "America/Chicago" },
+    { name: "New York, Lima", iana: "America/New_York" },
+    { name: "Halifax, Santiago", iana: "America/Halifax" },
+    { name: "São Paulo, Buenos Aires", iana: "America/Sao_Paulo" },
+    { name: "South Georgia", iana: "Atlantic/South_Georgia" },
+    { name: "Azores, Cape Verde", iana: "Atlantic/Azores" },
+    { name: "London, Dublin", iana: "Europe/London" },
+    { name: "Paris, Rome", iana: "Europe/Paris" },
+    { name: "Cairo, Johannesburg", iana: "Africa/Cairo" },
+    { name: "Moscow, Istanbul", iana: "Europe/Moscow" },
+    { name: "Dubai, Baku", iana: "Asia/Dubai" },
+    { name: "Karachi, Tashkent", iana: "Asia/Karachi" },
+    { name: "Dhaka, Almaty", iana: "Asia/Dhaka" },
+    { name: "Bangkok, Jakarta", iana: "Asia/Bangkok" },
+    { name: "Shanghai, Perth", iana: "Asia/Shanghai" },
+    { name: "Tokyo, Seoul", iana: "Asia/Tokyo" },
+    { name: "Sydney, Guam", iana: "Australia/Sydney" },
+    { name: "Vladivostok, Solomon Is.", iana: "Asia/Vladivostok" },
+    { name: "Auckland, Fiji", iana: "Pacific/Auckland" }
 ];
 
 let currentIndex;
@@ -38,25 +38,30 @@ const dialContainer = document.getElementById('dial-container');
 const dialTrack = document.getElementById('dial-track');
 const toastElement = document.getElementById('toast-notification');
 
-// Updates only the ticking time, called every second
 function updateTime(zone) {
     const timeOptions = { timeZone: zone.iana, hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
     timeDisplayElement.textContent = new Date().toLocaleTimeString('en-US', timeOptions);
 }
 
-// Updates static info (city, date, etc.), called only when the time zone changes
 function updateStaticInfo(zone) {
+    const now = new Date();
     const dateOptions = { timeZone: zone.iana, weekday: 'long', month: 'long', day: 'numeric' };
-    const dateString = new Date().toLocaleDateString('en-US', dateOptions);
+    const dateString = now.toLocaleDateString('en-US', dateOptions);
 
+    const timeZoneFormatter = new Intl.DateTimeFormat('en-US', {
+        timeZone: zone.iana,
+        timeZoneName: 'shortOffset',
+    });
+    const offsetString = timeZoneFormatter.formatToParts(now).find(part => part.type === 'timeZoneName').value;
+    utcOffsetElement.textContent = offsetString.replace('GMT', 'UTC');
+    
     cityNameTextElement.textContent = zone.name;
     dateDisplayElement.textContent = dateString;
-    utcOffsetElement.textContent = zone.offset;
 
     const favoriteIana = localStorage.getItem('favoriteTimeZone');
     mainFavoriteIcon.classList.toggle('hidden', favoriteIana !== zone.iana);
     
-    const hour = parseInt(new Date().toLocaleTimeString('en-US', { timeZone: zone.iana, hour: '2-digit', hour12: false }));
+    const hour = parseInt(now.toLocaleTimeString('en-US', { timeZone: zone.iana, hour: '2-digit', hour12: false }));
     updateBackground(hour);
 }
 
@@ -77,22 +82,16 @@ function startClock() {
     }, 1000);
 }
 
-// NEW: Central function to handle changing time zones with animation
 function changeTimeZone(newIndex) {
     currentIndex = newIndex;
     const zone = timeZones[currentIndex];
-
     infoWrapper.classList.add('slide-out');
-    
     setTimeout(() => {
         updateStaticInfo(zone);
-        updateTime(zone); // Update time immediately to prevent lag
+        updateTime(zone);
         updateDialPosition();
-        
         infoWrapper.classList.remove('slide-out');
         infoWrapper.classList.add('slide-in');
-
-        // Clean up animation class
         setTimeout(() => infoWrapper.classList.remove('slide-in'), 300);
     }, 150);
 }
@@ -102,7 +101,6 @@ function updateDialPosition() {
     const containerWidth = dialContainer.offsetWidth;
     const offset = (containerWidth / 2) - (itemWidth / 2) - (currentIndex * itemWidth);
     dialTrack.style.transform = `translateX(${offset}px)`;
-
     const allItems = document.querySelectorAll('.dial-item');
     const favoriteIana = localStorage.getItem('favoriteTimeZone');
     allItems.forEach((item, index) => {
@@ -130,7 +128,7 @@ function buildDial() {
 
 function showToast(message) {
     toastElement.textContent = message;
-    toastElement.className = 'show'; // Use a dedicated class to trigger animation
+    toastElement.className = 'show';
     setTimeout(() => {
         toastElement.className = 'hidden';
     }, 3900);
@@ -144,9 +142,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (initialIndex === -1) {
         const localIana = Intl.DateTimeFormat().resolvedOptions().timeZone;
         initialIndex = timeZones.findIndex(tz => tz.iana === localIana);
-        if (initialIndex === -1) initialIndex = 11;
+        if (initialIndex === -1) initialIndex = 11; // Default to London
     }
-
     currentIndex = initialIndex;
     updateStaticInfo(timeZones[currentIndex]);
     updateTime(timeZones[currentIndex]);
