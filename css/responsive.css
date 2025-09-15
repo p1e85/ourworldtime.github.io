@@ -8,53 +8,39 @@ img, object, embed, video {
 body {
   margin-left: auto;
   margin-right: auto;
-  width: 81.9%;
-  padding-left: 4.55%;
-  padding-right: 4.55%;
-  clear: none;
-  float: none;
+  width: 95%; /* Give a little space on mobile */
+  padding: 0;
   min-height: 100%;
 }
 
+#time-display {
+    font-size: 18vw; /* Make font responsive on mobile */
+}
+
 /* =============================================
-  Tablet layout styles used by devices
-  481px to 768px and cascaded to larger 
-  devices.
+  Tablet layout styles 
    =============================================
 */
 
 @media only screen and (min-width: 481px) {
-body {
-  width: 91.14%;
-  padding-left: 0.93%;
-  padding-right: 0.93%;
-  clear: none;
-  float: none;
-  margin-left: auto;
-}
-
-
+    body {
+      width: 90%;
+    }
+    #time-display {
+        font-size: 12vw;
+    }
 }
 
 /* =============================================
-  Desktop layout styles used by  devices
-  769px and larger.
+  Desktop layout styles
    =============================================
 */
 
 @media only screen and (min-width: 769px) {
-html {
-  margin: 0px auto;
-}
-body {
-  width: 88.2%;
-  max-width: 800px;
-  padding-left: 0.9%;
-  padding-right: 0.9%;
-  margin: auto;
-  clear: none;
-  float: none;
-  margin-left: auto;
-}
-
+    #clock-container {
+        max-width: 900px;
+    }
+    #time-display {
+        font-size: 6em; /* Reset to fixed size on large screens */
+    }
 }
