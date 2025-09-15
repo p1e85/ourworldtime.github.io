@@ -26,8 +26,10 @@ const timeZones = [
     { name: "Auckland, Fiji", iana: "Pacific/Auckland", offset: "UTC+12" }
 ];
 
-// Variable to track which time zone we are currently displaying
+// --- STATE VARIABLES ---
 let currentIndex;
+let isLocalTime = true; // Track if we are showing local time or a list time zone
+let clockInterval; // To hold our setInterval reference
 
 // --- DOM ELEMENTS ---
 const cityNameElement = document.getElementById('city-name');
@@ -38,23 +40,27 @@ const utcOffsetElement = document.getElementById('utc-offset');
 
 // Displays the time for a given time zone object
 function displayTimeForZone(zone) {
-    const options = {
-        timeZone: zone.iana,
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit',
-        hour12: false // Use 24-hour format
-    };
-
+    const options = { timeZone: zone.iana, hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
     const timeString = new Date().toLocaleTimeString('en-US', options);
     
     cityNameElement.textContent = zone.name;
     timeDisplayElement.textContent = timeString;
     utcOffsetElement.textContent = zone.offset;
-
-    // Also update the background based on the displayed time's hour
+    
     const hour = parseInt(timeString.substring(0, 2));
     updateBackground(hour);
+}
+
+// Displays the user's local time
+function displayLocalTime() {
+    const localIana = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    let localZone = timeZones.find(tz => tz.iana === localIana);
+    
+    if (!localZone) {
+        localZone = { name: "Your Local Time", iana: localIana, offset: "" };
+    }
+    
+    displayTimeForZone(localZone);
 }
 
 function updateBackground(hour) {
@@ -67,29 +73,37 @@ function updateBackground(hour) {
     if (body.className !== newClass) { body.className = newClass; }
 }
 
-// Main loop that runs every second
-function clockLoop() {
-    displayTimeForZone(timeZones[currentIndex]);
-    setTimeout(clockLoop, 1000);
+// Main loop that updates the clock every second
+function startClock() {
+    if (clockInterval) clearInterval(clockInterval);
+
+    clockInterval = setInterval(() => {
+        if (isLocalTime) {
+            displayLocalTime();
+        } else {
+            displayTimeForZone(timeZones[currentIndex]);
+        }
+    }, 1000);
 }
 
 // --- INITIALIZATION ---
 
-// This code runs once when the page loads
 document.addEventListener('DOMContentLoaded', () => {
-    // Detect user's local time zone
-    const localIana = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    
-    // Find the index of the user's time zone in our list
-    let initialIndex = timeZones.findIndex(tz => tz.iana === localIana);
+    const savedFavoriteIana = localStorage.getItem('favoriteTimeZone');
+    let initialIndex = -1;
 
-    // If not found, default to London (UTC+0)
+    if (savedFavoriteIana) {
+        isLocalTime = false;
+        initialIndex = timeZones.findIndex(tz => tz.iana === savedFavoriteIana);
+    } 
+    
     if (initialIndex === -1) {
-        initialIndex = timeZones.findIndex(tz => tz.iana === "Europe/London");
+        isLocalTime = true;
+        displayLocalTime();
+    } else {
+        currentIndex = initialIndex;
+        displayTimeForZone(timeZones[currentIndex]);
     }
-
-    currentIndex = initialIndex;
     
-    // Start the clock
-    clockLoop();
+    startClock();
 });
