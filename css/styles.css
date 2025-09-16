@@ -1,11 +1,5 @@
-@keyframes slideOutUp {
-    from { transform: translateY(0); opacity: 1; }
-    to { transform: translateY(-40px); opacity: 0; }
-}
-@keyframes slideInUp {
-    from { transform: translateY(40px); opacity: 0; }
-    to { transform: translateY(0); opacity: 1; }
-}
+@keyframes slideOutUp { from { transform: translateY(0); opacity: 1; } to { transform: translateY(-40px); opacity: 0; } }
+@keyframes slideInUp { from { transform: translateY(40px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 @keyframes animateGradient { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
 @keyframes fadeinout { 0%, 100% { top: -100px; opacity: 0; } 10%, 90% { top: 30px; opacity: 1; } }
 @keyframes nudge { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(-20px); } }
@@ -98,7 +92,6 @@ h1 {
 #utc-offset { font-family: sans-serif; font-size: 1.2em; opacity: 0.8; margin: 0; }
 #date-display { font-family: sans-serif; font-size: 1.5em; opacity: 0.9; margin: 5px 0; }
 
-/* --- DIAL STYLES --- */
 #dial-container { position: fixed; bottom: 0; left: 0; right: 0; height: 100px; background: rgba(0, 0, 0, 0.25); backdrop-filter: blur(8px); border-top: 1px solid rgba(255, 255, 255, 0.2); overflow: hidden; display: flex; align-items: center; user-select: none; }
 #dial-container::before, #dial-container::after { content: ''; position: absolute; top: 0; bottom: 0; width: 50px; z-index: 5; pointer-events: none; }
 #dial-container::before { left: 0; background: linear-gradient(to right, rgba(0,0,0,0.4), transparent); }
@@ -132,23 +125,19 @@ h1 {
     text-overflow: ellipsis;
 }
 
-.dial-favorite-star, .dial-visited-mark {
+.dial-favorite-star {
     font-size: 1.2em;
     flex-shrink: 0;
     width: 1.2em;
+    margin-right: 8px;
     transition: opacity 0.3s ease, width 0.3s ease, margin 0.3s ease;
 }
 
-.dial-favorite-star { margin-right: 8px; }
-.dial-visited-mark { margin-left: 8px; }
-
-.dial-favorite-star.hidden, .dial-visited-mark.hidden {
+.dial-favorite-star.hidden {
     width: 0;
     margin: 0;
 }
 
-#mark-timezone-btn { position: absolute; bottom: 20px; right: 25px; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.3); color: white; font-size: 1.5em; width: 50px; height: 50px; border-radius: 50%; cursor: pointer; transition: background-color 0.2s ease; backdrop-filter: blur(5px); }
-#mark-timezone-btn:hover { background: rgba(255, 255, 255, 0.2); }
 #toast-notification { position: fixed; top: 30px; left: 50%; transform: translateX(-50%); background-color: rgba(30, 30, 30, 0.9); backdrop-filter: blur(5px); color: white; padding: 15px 25px; border-radius: 50px; z-index: 1000; font-family: sans-serif; }
 #toast-notification.show { animation: fadeinout 4s ease-in-out; }
 .hidden { opacity: 0; visibility: hidden; }
