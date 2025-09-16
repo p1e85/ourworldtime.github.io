@@ -22,7 +22,6 @@ const timeZones = [
     { name: "Tokyo, Seoul", iana: "Asia/Tokyo" },
     { name: "Sydney, Guam", iana: "Australia/Sydney" },
     { name: "Vladivostok, Solomon Is.", iana: "Asia/Vladivostok" },
-    // FIX: Corrected a typo here from "name:g" to "name:"
     { name: "Auckland, Fiji", iana: "Pacific/Auckland" }
 ];
 
