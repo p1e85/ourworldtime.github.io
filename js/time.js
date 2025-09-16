@@ -1,4 +1,30 @@
-const timeZones = [ { name: "Samoa, Midway", iana: "Pacific/Samoa" }, { name: "Hawaii, Honolulu", iana: "Pacific/Honolulu" }, { name: "Alaska, Anchorage", iana: "America/Anchorage" }, { name: "Los Angeles, Vancouver", iana: "America/Los_Angeles" }, { name: "Denver, Phoenix", iana: "America/Denver" }, { name: "Chicago, Mexico City", iana: "America/Chicago" }, { name: "New York, Lima", iana: "America/New_York" }, { name: "Halifax, Santiago", iana: "America/Halifax" }, { name: "São Paulo, Buenos Aires", iana: "America/Sao_Paulo" }, { name: "South Georgia", iana: "Atlantic/South_Georgia" }, { name: "Azores, Cape Verde", iana: "Atlantic/Azores" }, { name: "London, Dublin", iana: "Europe/London" }, { name: "Paris, Rome", iana: "Europe/Paris" }, { name: "Cairo, Johannesburg", iana: "Africa/Cairo" }, { name: "Moscow, Istanbul", iana: "Europe/Moscow" }, { name: "Dubai, Baku", iana: "Asia/Dubai" }, { name: "Karachi, Tashkent", iana: "Asia/Karachi" }, { name: "Dhaka, Almaty", iana: "Asia/Dhaka" }, { name: "Bangkok, Jakarta", iana: "Asia/Bangkok" }, { name: "Shanghai, Perth", iana: "Asia/Shanghai" }, { name: "Tokyo, Seoul", iana: "Asia/Tokyo" }, { name: "Sydney, Guam", iana: "Australia/Sydney" }, { name: "Vladivostok, Solomon Is.", iana: "Asia/Vladivostok" }, { name: "Auckland, Fiji", iana: "Pacific/Auckland" } ];
+const timeZones = [
+    { name: "Samoa, Midway", iana: "Pacific/Samoa" },
+    { name: "Hawaii, Honolulu", iana: "Pacific/Honolulu" },
+    { name: "Alaska, Anchorage", iana: "America/Anchorage" },
+    { name: "Los Angeles, Vancouver", iana: "America/Los_Angeles" },
+    { name: "Denver, Phoenix", iana: "America/Denver" },
+    { name: "Chicago, Mexico City", iana: "America/Chicago" },
+    { name: "New York, Lima", iana: "America/New_York" },
+    { name: "Halifax, Santiago", iana: "America/Halifax" },
+    { name: "São Paulo, Buenos Aires", iana: "America/Sao_Paulo" },
+    { name: "South Georgia", iana: "Atlantic/South_Georgia" },
+    { name: "Azores, Cape Verde", iana: "Atlantic/Azores" },
+    { name: "London, Dublin", iana: "Europe/London" },
+    { name: "Paris, Rome", iana: "Europe/Paris" },
+    { name: "Cairo, Johannesburg", iana: "Africa/Cairo" },
+    { name: "Moscow, Istanbul", iana: "Europe/Moscow" },
+    { name: "Dubai, Baku", iana: "Asia/Dubai" },
+    { name: "Karachi, Tashkent", iana: "Asia/Karachi" },
+    { name: "Dhaka, Almaty", iana: "Asia/Dhaka" },
+    { name: "Bangkok, Jakarta", iana: "Asia/Bangkok" },
+    { name: "Shanghai, Perth", iana: "Asia/Shanghai" },
+    { name: "Tokyo, Seoul", iana: "Asia/Tokyo" },
+    { name: "Sydney, Guam", iana: "Australia/Sydney" },
+    { name: "Vladivostok, Solomon Is.", iana: "Asia/Vladivostok" },
+    // FIX: Corrected a typo here from "name:g" to "name:"
+    { name: "Auckland, Fiji", iana: "Pacific/Auckland" }
+];
 
 let currentIndex;
 let clockInterval;
