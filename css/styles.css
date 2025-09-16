@@ -1,11 +1,5 @@
-@keyframes slideOutUp {
-    from { transform: translateY(0); opacity: 1; }
-    to { transform: translateY(-40px); opacity: 0; }
-}
-@keyframes slideInUp {
-    from { transform: translateY(40px); opacity: 0; }
-    to { transform: translateY(0); opacity: 1; }
-}
+@keyframes slideOutUp { from { transform: translateY(0); opacity: 1; } to { transform: translateY(-40px); opacity: 0; } }
+@keyframes slideInUp { from { transform: translateY(40px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 @keyframes animateGradient { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
 @keyframes fadeinout { 0%, 100% { top: -100px; opacity: 0; } 10%, 90% { top: 30px; opacity: 1; } }
 @keyframes nudge { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(-20px); } }
@@ -20,6 +14,9 @@ body {
 	text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5);
     box-sizing: border-box;
     overflow-x: hidden;
+    /* CHANGED: Use Flexbox for main layout */
+    display: flex;
+    flex-direction: column;
 }
 
 body.morning { background: linear-gradient(-45deg, #f8cdda, #a5d3f2, #f5e6a8); }
@@ -32,11 +29,16 @@ h1 {
     text-align: center;
     margin: 20px 0 10px 0;
     font-size: 2.5em;
+    flex-shrink: 0; /* Prevent title from shrinking */
 }
 
+/* CHANGED: Clock container is now a flexible item */
 #clock-container {
 	border: 2px solid rgba(255, 255, 255, 0.5);
-	height: 820px; /* Tall height as requested */
+    flex-grow: 1; /* This makes the container grow to fill available space */
+    min-height: 450px; /* Set a minimum height to prevent it from getting too small */
+    width: 100%;
+    max-width: 900px; /* Constrain the width on large screens */
     margin: 0 auto 20px auto; /* Center the container */
 	border-radius: 15px;
 	background: rgba(0, 0, 0, 0.2);
