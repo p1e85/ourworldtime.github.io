@@ -1,5 +1,11 @@
-@keyframes slideOutUp { from { transform: translateY(0); opacity: 1; } to { transform: translateY(-40px); opacity: 0; } }
-@keyframes slideInUp { from { transform: translateY(40px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+@keyframes slideOutUp {
+    from { transform: translateY(0); opacity: 1; }
+    to { transform: translateY(-40px); opacity: 0; }
+}
+@keyframes slideInUp {
+    from { transform: translateY(40px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
 @keyframes animateGradient { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
 @keyframes fadeinout { 0%, 100% { top: -100px; opacity: 0; } 10%, 90% { top: 30px; opacity: 1; } }
 @keyframes nudge { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(-20px); } }
@@ -25,7 +31,8 @@ body.night { background: linear-gradient(-45deg, #0f2027, #203a43, #2c5364); }
 .ad-layout-container {
     display: grid;
     grid-template-columns: 1fr;
-    grid-template-rows: auto minmax(720px, auto);
+    /* CHANGED: Increased the minimum height of the clock's row */
+    grid-template-rows: auto minmax(820px, auto);
     gap: 15px;
     grid-template-areas:
         "title"
