@@ -10,36 +10,16 @@ body {
 }
 
 #time-display {
-    font-size: 18vw; /* Make font responsive on mobile */
+    font-size: 18vw; /* Large, responsive font for mobile */
 }
 
 /* =============================================
-  Tablet layout styles 
+  Tablet and Desktop styles 
    =============================================
 */
 
-@media only screen and (min-width: 481px) {
+@media only screen and (min-width: 769px) {
     #time-display {
-        font-size: 12vw;
-    }
-}
-
-/* =============================================
-  Desktop layout styles
-   =============================================
-*/
-
-@media only screen and (min-width: 900px) {
-    body {
-      width: 90%;
-      margin-left: auto;
-      margin-right: auto;
-    }
-
-    #clock-container {
-        max-width: 900px;
-    }
-    #time-display {
-        font-size: 6em; /* Reset to fixed size on large screens */
+        font-size: 6em; /* Reset to a fixed size on larger screens */
     }
 }
