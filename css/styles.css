@@ -41,16 +41,21 @@ body.day { background: linear-gradient(-45deg, #89d8f8, #c4e9f8, #f0f8ff); }
 body.evening { background: linear-gradient(-45deg, #7b68b6, #e47ec7, #f7ac83); }
 body.night { background: linear-gradient(-45deg, #0f2027, #203a43, #2c5364); }
 
+/* --- CORRECTED GRID LAYOUT --- */
 .ad-layout-container {
     display: grid;
     grid-template-columns: 1fr;
-    grid-template-rows: auto 1fr;
+    /* CHANGED: This row now has a minimum height to prevent shrinking */
+    grid-template-rows: auto minmax(620px, auto);
     gap: 15px;
-    height: calc(100vh - 145px); /* Adjusted for new dial height */
+    /* REMOVED: The brittle height calculation is no longer needed */
+    
     grid-template-areas:
         "title"
         "clock";
 }
+/* --- END OF FIX --- */
+
 
 h1 { 
     grid-area: title;
@@ -66,7 +71,8 @@ h1 {
 	border: 2px solid rgba(255, 255, 255, 0.5);
 	height: 100%;
     max-width: 900px;
-    justify-self: center;
+    justify-self: center; /* Center the container in the grid cell */
+    width: 100%; /* Ensure it takes up the available width */
 	border-radius: 15px;
 	background: rgba(0, 0, 0, 0.2);
 	backdrop-filter: blur(5px);
@@ -95,7 +101,7 @@ h1 {
     bottom: 0; 
     left: 0; 
     right: 0; 
-    height: 100px; /* CHANGED: Increased height from 70px */
+    height: 100px;
     background: rgba(0, 0, 0, 0.25); 
     backdrop-filter: blur(8px); 
     border-top: 1px solid rgba(255, 255, 255, 0.2); 
@@ -116,9 +122,9 @@ h1 {
     transform: translateX(-50%); 
     width: 0; 
     height: 0; 
-    border-left: 14px solid transparent; /* CHANGED: Increased size */
-    border-right: 14px solid transparent; /* CHANGED: Increased size */
-    border-top: 14px solid white; /* CHANGED: Increased size */
+    border-left: 14px solid transparent;
+    border-right: 14px solid transparent;
+    border-top: 14px solid white;
     z-index: 10; 
 }
 #dial-track { display: flex; position: absolute; height: 100%; transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
@@ -132,7 +138,7 @@ h1 {
     justify-content: center; 
     align-items: center; 
     font-family: sans-serif; 
-    font-size: 18px; /* CHANGED: Increased font size */
+    font-size: 18px;
     color: white; 
     cursor: pointer; 
     opacity: 0.5; 
@@ -149,7 +155,7 @@ h1 {
 
 #view-counter {
     position: fixed;
-    bottom: 115px; /* CHANGED: Moved up to clear the taller dial */
+    bottom: 115px;
     right: 15px;
     font-family: sans-serif;
     font-size: 12px;
