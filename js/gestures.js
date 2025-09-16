@@ -1,10 +1,8 @@
-// This function sets up all the Hammer.js gesture listeners.
 function setupGestures() {
     const clockContainer = document.getElementById('clock-container');
     const dialContainer = document.getElementById('dial-container');
     const dialTrack = document.getElementById('dial-track');
 
-    // --- Set up gestures for the main clock (Up/Down swipes) ---
     const clockHammer = new Hammer(clockContainer);
     clockHammer.get('swipe').set({ direction: Hammer.DIRECTION_ALL });
 
@@ -30,7 +28,6 @@ function setupGestures() {
         updateDialPosition();
     });
 
-    // --- Set up gestures for the dial (Pan/Drag) ---
     const dialHammer = new Hammer(dialContainer);
     dialHammer.on('panstart panmove panend', (ev) => {
         dialTrack.style.transition = 'none';
@@ -49,16 +46,16 @@ function setupGestures() {
         if (ev.type === 'panend') {
             dialTrack.style.transition = 'transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
             
-            // FIX: Changed itemWidth from 200 to 250 to match the CSS
-            const itemWidth = 250; 
+            const itemWidth = dialItemWidth; // Use the dynamically set width
             const currentOffset = parseFloat(dialTrack.dataset.initialOffset) + ev.deltaX;
             
             let newIndex = Math.round(-currentOffset / itemWidth);
+
             newIndex = Math.max(0, Math.min(timeZones.length - 1, newIndex));
 
-            if (ev.velocityX < -0.5) { // Fast swipe left
+            if (ev.velocityX < -0.5) {
                 newIndex = Math.min(timeZones.length - 1, newIndex + 1);
-            } else if (ev.velocityX > 0.5) { // Fast swipe right
+            } else if (ev.velocityX > 0.5) {
                 newIndex = Math.max(0, newIndex - 1);
             }
 
