@@ -10,15 +10,21 @@ body {
 	transition: background 2s ease-in-out;
 	min-height: 100vh;
 	margin: 0;
-    padding: 15px;
+    padding: 15px 15px 120px 15px; /* Add space at the bottom for the dial */
 	color: white;
 	text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5);
     box-sizing: border-box;
     overflow-x: hidden;
+    /* CHANGED: Use Flexbox for a flexible main layout */
+    display: flex;
+    flex-direction: column;
 }
 
+/* CHANGED: Make the main content area grow to fill space */
 main {
-    padding-bottom: 120px; /* Pushes content up from behind the dial */
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
 }
 
 body.morning { background: linear-gradient(-45deg, #f8cdda, #a5d3f2, #f5e6a8); }
@@ -31,14 +37,17 @@ h1 {
     text-align: center;
     margin: 20px 0 10px 0;
     font-size: 2.5em;
+    flex-shrink: 0; /* Prevent title from shrinking */
 }
 
 #clock-container {
 	border: 2px solid rgba(255, 255, 255, 0.5);
-    height: 600px; 
+    /* CHANGED: Removed fixed height, added flex-grow */
+    flex-grow: 1;
+    min-height: 450px;
     max-width: 900px;
-    margin: 0 auto 20px auto; /* Centering */
-    width: auto;
+    margin: 0 auto 20px auto;
+    width: 100%;
 	border-radius: 15px;
 	background: rgba(0, 0, 0, 0.2);
 	backdrop-filter: blur(5px);
