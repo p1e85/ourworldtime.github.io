@@ -49,16 +49,16 @@ h1 { font-family: 'Cormorant Garamond', serif; text-align: center; margin: 20px 
 .preview-clock { grid-column: 1 / -1; border: 2px dashed rgba(255, 255, 255, 0.5); background-color: rgba(0, 0, 0, 0.4); cursor: default; }
 .preview-clock:hover { transform: none; }
 
-/* --- NEW: Mobile layout for multi-clock view --- */
+/* --- Mobile layout for multi-clock view --- */
 @media only screen and (max-width: 768px) {
     #clock-container {
-        height: auto; /* Allow container to grow */
+        height: auto;
         min-height: 500px;
     }
     #multi-clock-grid {
         grid-template-columns: 1fr; /* Stack in a single column */
     }
     .mini-clock .mini-time {
-        font-size: 10vw; /* Make font responsive */
+        font-size: 10vw;
     }
 }
