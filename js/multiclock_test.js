@@ -19,8 +19,8 @@ const dialTrack = document.getElementById('dial-track');
 const toastElement = document.getElementById('toast-notification');
 
 // --- Core Display Functions ---
-function updateTime(zone) { const timeOptions = { timeZone: zone.iana, hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false }; timeDisplayElement.textContent = new Date().toLocaleTimeString('EN-us', timeOptions); }
-function updateStaticInfo(zone) { const now = new Date(); const dateOptions = { timeZone: zone.iana, weekday: 'long', month: 'long', day: 'numeric' }; const dateString = now.toLocaleDateString('EN-us', dateOptions); const timeZoneFormatter = new Intl.DateTimeFormat('EN-us', { timeZone: zone.iana, timeZoneName: 'shortOffset', }); const offsetString = timeZoneFormatter.formatToParts(now).find(part => part.type === 'timeZoneName').value; utcOffsetElement.textContent = offsetString.replace('GMT', 'UTC'); cityNameTextElement.textContent = zone.name; dateDisplayElement.textContent = dateString; const favoriteIana = localStorage.getItem('favoriteTimeZone'); mainFavoriteIcon.classList.toggle('hidden', favoriteIana !== zone.iana); const hour = parseInt(now.toLocaleTimeString('EN-us', { timeZone: zone.iana, hour: '2-digit', hour12: false })); updateBackground(hour); }
+function updateTime(zone) { const timeOptions = { timeZone: zone.iana, hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false }; timeDisplayElement.textContent = new Date().toLocaleTimeString('en-US', timeOptions); }
+function updateStaticInfo(zone) { const now = new Date(); const dateOptions = { timeZone: zone.iana, weekday: 'long', month: 'long', day: 'numeric' }; const dateString = now.toLocaleDateString('en-US', dateOptions); const timeZoneFormatter = new Intl.DateTimeFormat('en-US', { timeZone: zone.iana, timeZoneName: 'shortOffset', }); const offsetString = timeZoneFormatter.formatToParts(now).find(part => part.type === 'timeZoneName').value; utcOffsetElement.textContent = offsetString.replace('GMT', 'UTC'); cityNameTextElement.textContent = zone.name; dateDisplayElement.textContent = dateString; const favoriteIana = localStorage.getItem('favoriteTimeZone'); mainFavoriteIcon.classList.toggle('hidden', favoriteIana !== zone.iana); const hour = parseInt(now.toLocaleTimeString('en-US', { timeZone: zone.iana, hour: '2-digit', hour12: false })); updateBackground(hour); }
 function updateBackground(hour) { const body = document.body; let newClass = ''; if (hour >= 5 && hour < 11) { newClass = 'morning'; } else if (hour >= 11 && hour < 17) { newClass = 'day'; } else if (hour >= 17 && hour < 21) { newClass = 'evening'; } else { newClass = 'night'; } if (body.className !== newClass) { body.className = newClass; } }
 function updateDialPosition() { const itemWidth = dialItemWidth; const containerWidth = dialContainer.offsetWidth; const offset = (containerWidth / 2) - (itemWidth / 2) - (currentIndex * itemWidth); dialTrack.style.transform = `translateX(${offset}px)`; const allItems = document.querySelectorAll('.dial-item'); const favoriteIana = localStorage.getItem('favoriteTimeZone'); allItems.forEach((item, index) => { const zone = timeZones[index]; item.classList.toggle('active', index === currentIndex); item.querySelector('.dial-favorite-star').classList.toggle('hidden', zone.iana !== favoriteIana); }); }
 function buildDial() { timeZones.forEach((zone, index) => { const item = document.createElement('div'); item.className = 'dial-item'; item.dataset.index = index; const star = document.createElement('span'); star.className = 'dial-favorite-star hidden'; star.textContent = '⭐'; const name = document.createElement('span'); name.className = 'dial-item-name'; name.textContent = zone.name; item.appendChild(star); item.appendChild(name); item.addEventListener('click', () => changeTimeZone(index)); dialTrack.appendChild(item); }); }
@@ -59,7 +59,7 @@ function createMiniClock(zone, isPreview) {
 }
 
 function updateAllClocks() {
-    updateTime(timeZones[currentIndex]); // Always update the (hidden) single clock
+    updateTime(timeZones[currentIndex]);
     const miniClocks = multiClockGrid.querySelectorAll('.mini-clock');
     miniClocks.forEach(clockEl => {
         const timeEl = clockEl.querySelector('.mini-time');
@@ -118,7 +118,7 @@ function changeTimeZone(newIndex) {
             setTimeout(() => infoWrapper.classList.remove('slide-in'), 300);
         }, 150);
     } else {
-        buildMultiClockGrid(); // Rebuild to update preview clock
+        buildMultiClockGrid();
     }
 }
 
