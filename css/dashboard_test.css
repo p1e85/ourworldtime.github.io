@@ -9,7 +9,7 @@ main { padding-bottom: 120px; }
 body.morning { background: linear-gradient(-45deg, #f8cdda, #a5d3f2, #f5e6a8); }
 body.day { background: linear-gradient(-45deg, #89d8f8, #c4e9f8, #f0f8ff); }
 body.evening { background: linear-gradient(-45deg, #7b68b6, #e47ec7, #f7ac83); }
-body.night { background: linear-gradient(-45deg, #0f2027, #203a43, #2c5_test.css364); }
+body.night { background: linear-gradient(-45deg, #0f2027, #203a43, #2c5364); }
 h1 { font-family: 'Cormorant Garamond', serif; text-align: center; margin: 20px 0 10px 0; padding: 0 15px; font-size: 2.5em; }
 #clock-container { border: 2px solid rgba(255, 255, 255, 0.5); height: 750px; margin: 0 auto 20px auto; border-radius: 15px; background: rgba(0, 0, 0, 0.2); backdrop-filter: blur(5px); display: flex; justify-content: center; align-items: center; text-align: center; position: relative; overflow: hidden; }
 #clock-info-wrapper { width: 100%; }
@@ -41,26 +41,11 @@ h1 { font-family: 'Cormorant Garamond', serif; text-align: center; margin: 20px 
 /* --- Multi-Clock & Button Styles --- */
 #view-toggle-btn { position: absolute; top: 20px; right: 25px; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.3); color: white; font-size: 1.5em; width: 50px; height: 50px; border-radius: 50%; cursor: pointer; transition: all 0.2s ease; z-index: 100; }
 #view-toggle-btn:hover { background: rgba(255, 255, 255, 0.2); }
-#clock-container.multi-view-active #clock-info-wrapper { display: none; }
-#clock-container.multi-view-active #multi-clock-grid { display: flex; }
-
-#multi-clock-grid {
-    display: none;
-    flex-direction: column;
-    gap: 15px;
-    width: 100%;
-    height: 100%;
-    /* CHANGED: Increased top padding to make room for the button */
-    padding: 80px 20px 20px 20px;
-    box-sizing: border-box;
-    overflow-y: auto;
-}
-
-.mini-clock { background-color: rgba(0, 0, 0, 0.2); border-radius: 10px; padding: 15px; display: flex; justify-content: space-between; align-items: center; overflow: hidden; position: relative; flex-shrink: 0; }
-.mini-clock:hover { transform: scale(1.03); }
-.mini-clock h3 { margin: 0; font-size: 1.5em; font-family: 'Cormorant Garamond', serif; font-weight: 400; opacity: 0.9; }
-.mini-clock .mini-time { font-family: 'Cormorant Garamond', serif; font-size: 2.5em; font-weight: 700; }
-.delete-clock-btn { background: none; border: none; color: white; font-size: 1.8em; opacity: 0.4; cursor: pointer; transition: opacity 0.2s ease; padding: 0 10px; }
-.delete-clock-btn:hover { opacity: 1; }
+#clock-container.dashboard-active #clock-info-wrapper { display: none; }
+#clock-container.dashboard-active #multi-clock-grid { display: grid; }
+#multi-clock-grid { display: none; grid-template-columns: 1fr 1fr; gap: 20px; width: 100%; height: 100%; padding: 20px; box-sizing: border-box; }
+.mini-clock { background-color: rgba(0, 0, 0, 0.2); border-radius: 10px; padding: 15px; display: flex; flex-direction: column; justify-content: center; align-items: center; overflow: hidden; }
+.mini-clock h3 { margin: 0 0 10px 0; font-size: 1.5em; font-family: 'Cormorant Garamond', serif; font-weight: 400; opacity: 0.9; text-align: center; }
+.mini-clock .mini-time { font-family: 'Cormorant Garamond', serif; font-size: 3em; font-weight: 700; }
 
 @media (max-width: 768px) { #clock-container { height: auto; min-height: 500px; padding-bottom: 20px; } #multi-clock-grid { grid-template-columns: 1fr; } .mini-clock .mini-time { font-size: 10vw; } #time-display { font-size: 18vw; } }
