@@ -25,6 +25,7 @@ main {
     flex-grow: 1;
     display: flex;
     flex-direction: column;
+	 padding-bottom: 120px;
 }
 
 body.morning { background: linear-gradient(-45deg, #f8cdda, #a5d3f2, #f5e6a8); }
