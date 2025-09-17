@@ -38,12 +38,9 @@ h1 { font-family: 'Cormorant Garamond', serif; text-align: center; margin: 20px 
 #toast-notification.show { animation: fadeinout 4s ease-in-out; }
 .hidden { display: none !important; }
 
-/* --- Multi-Clock & New Button Styles --- */
+/* --- Multi-Clock & Button Styles --- */
 #view-toggle-btn { position: absolute; top: 20px; right: 25px; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.3); color: white; font-size: 1.5em; width: 50px; height: 50px; border-radius: 50%; cursor: pointer; transition: all 0.2s ease; z-index: 100; }
 #view-toggle-btn:hover { background: rgba(255, 255, 255, 0.2); }
-#add-clock-btn { display: block; margin: 0 auto; padding: 10px 20px; font-size: 1em; background-color: rgba(255, 255, 255, 0.2); border: 1px solid rgba(255, 255, 255, 0.4); color: white; border-radius: 20px; cursor: pointer; transition: background-color 0.2s ease; }
-#add-clock-btn:hover { background-color: rgba(255, 255, 255, 0.3); }
-
 #clock-container.multi-view-active #clock-info-wrapper { display: none; }
 #clock-container.multi-view-active #multi-clock-grid { display: flex; }
 #multi-clock-grid { display: none; flex-direction: column; gap: 15px; width: 100%; height: 100%; padding: 20px; box-sizing: border-box; overflow-y: auto; }
@@ -53,10 +50,4 @@ h1 { font-family: 'Cormorant Garamond', serif; text-align: center; margin: 20px 
 .delete-clock-btn { background: none; border: none; color: white; font-size: 1.8em; opacity: 0.4; cursor: pointer; transition: opacity 0.2s ease; padding: 0 10px; }
 .delete-clock-btn:hover { opacity: 1; }
 
-/* --- START: NEW FIX --- */
-/* This rule makes the container grow with the list of clocks */
-#clock-container.multi-view-active {
-    height: auto;
-    align-items: stretch; /* Allow items to stretch to full width */
-}
-/* --- END: NEW FIX --- */
+@media (max-width: 768px) { #clock-container { height: auto; min-height: 500px; padding-bottom: 20px; } #multi-clock-grid { grid-template-columns: 1fr; } .mini-clock .mini-time { font-size: 10vw; } #time-display { font-size: 18vw; } }
