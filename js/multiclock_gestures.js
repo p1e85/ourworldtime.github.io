@@ -3,13 +3,31 @@ function setupGestures() {
     const dialContainer = document.getElementById('dial-container');
     const dialTrack = document.getElementById('dial-track');
 
-    const clockHammer = new Hammer(clockContainer);
-    clockHammer.get('swipe').set({ direction: Hammer.DIRECTION_ALL });
-    clockHammer.get('doubletap').set({ event: 'doubletap' });
-    clockHammer.get('press').set({ event: 'press', time: 500 });
+    const clockHammer = new Hammer(clockContainer, {
+        recognizers: [
+            [Hammer.Swipe, { direction: Hammer.DIRECTION_VERTICAL }],
+            [Hammer.Press, { time: 500 }],
+            [Hammer.Tap, { event: 'doubletap', taps: 2 }]
+        ]
+    });
 
-    // This one handler now works for both single and multi-clock views
-    clockHammer.on('doubletap press', handleClockInteraction);
+    clockHammer.on('doubletap press', (ev) => {
+        const miniClock = ev.target.closest('.mini-clock');
+
+        if (clockContainer.classList.contains('multi-view-active')) {
+            // MULTI-VIEW MODE
+            if (miniClock && !miniClock.classList.contains('preview-clock')) {
+                // Clicked on a saved clock -> REMOVE
+                removeClockFromDashboard(miniClock.dataset.iana);
+            } else {
+                // Clicked on the background or preview clock -> ADD
+                addClockToDashboard();
+            }
+        } else {
+            // SINGLE-VIEW MODE
+            addClockToDashboard();
+        }
+    });
 
     clockHammer.on('swipedown', () => {
         const localIana = Intl.DateTimeFormat().resolvedOptions().timeZone;
