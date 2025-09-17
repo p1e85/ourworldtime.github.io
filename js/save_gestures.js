@@ -4,8 +4,16 @@ function setupGestures() {
     const dialTrack = document.getElementById('dial-track');
 
     const clockHammer = new Hammer(clockContainer);
-    // Only listen for vertical swipes on the main clock
     clockHammer.get('swipe').set({ direction: Hammer.DIRECTION_VERTICAL });
+    clockHammer.get('doubletap').set({ event: 'doubletap', taps: 2 });
+    clockHammer.get('press').set({ event: 'press', time: 500 });
+
+    // This handles adding/removing clocks from the SINGLE view
+    clockHammer.on('doubletap press', () => {
+        if (!clockContainer.classList.contains('multi-view-active')) {
+             toggleDashboardClock(timeZones[currentIndex].iana);
+        }
+    });
 
     clockHammer.on('swipedown', () => {
         const localIana = Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -14,9 +22,7 @@ function setupGestures() {
     });
 
     clockHammer.on('swipeup', () => {
-        // Do not allow favoriting while in dashboard view
         if(clockContainer.classList.contains('multi-view-active')) return;
-        
         const favoriteIana = localStorage.getItem('favoriteTimeZone');
         const currentZone = timeZones[currentIndex];
         if (favoriteIana === currentZone.iana) {
