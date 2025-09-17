@@ -3,8 +3,7 @@ const timeZones = [ { name: "Samoa, Midway", iana: "Pacific/Samoa" }, { name: "H
 let currentIndex;
 let clockInterval;
 let dialItemWidth = 250;
-let savedDashboardClocks = []; // For clocks saved in localStorage
-let tempDashboardClocks = []; // For clocks in the current editing session
+let dashboardClocks = [];
 let localUserIana = '';
 
 const clockContainer = document.getElementById('clock-container');
@@ -32,7 +31,7 @@ function createMiniClock(zone) {
     const nameEl = document.createElement('h3'); nameEl.textContent = zone.name;
     const timeEl = document.createElement('div'); timeEl.className = 'mini-time'; timeEl.dataset.iana = zone.iana;
     const deleteBtn = document.createElement('button'); deleteBtn.className = 'delete-clock-btn'; deleteBtn.innerHTML = '&times;'; deleteBtn.title = `Remove ${zone.name}`;
-    deleteBtn.addEventListener('click', () => removeClockFromStaging(zone.iana));
+    deleteBtn.addEventListener('click', () => removeClockFromDashboard(zone.iana));
     const leftSide = document.createElement('div'); leftSide.appendChild(nameEl);
     const rightSide = document.createElement('div'); rightSide.style.display = 'flex'; rightSide.style.alignItems = 'center';
     rightSide.appendChild(timeEl);
@@ -41,9 +40,9 @@ function createMiniClock(zone) {
     return clockEl;
 }
 
-function renderDashboard(clockList) {
+function renderDashboard() {
     multiClockGrid.innerHTML = '';
-    clockList.forEach(iana => {
+    dashboardClocks.forEach(iana => {
         const zoneData = timeZones.find(tz => tz.iana === iana);
         if (zoneData) {
             const clockEl = createMiniClock(zoneData);
@@ -53,30 +52,40 @@ function renderDashboard(clockList) {
 }
 
 function updateAllClocks() {
-    updateTime(timeZones[currentIndex]); // Update the main single clock view time
-    const clockList = clockContainer.classList.contains('multi-view-active') ? tempDashboardClocks : savedDashboardClocks;
-    clockList.forEach(iana => {
+    const now = new Date();
+    // Update main clock
+    const mainZone = timeZones[currentIndex];
+    if(mainZone) {
+        const timeOptions = { timeZone: mainZone.iana, hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
+        timeDisplayElement.textContent = now.toLocaleTimeString('en-US', timeOptions);
+    }
+    // Update dashboard clocks
+    dashboardClocks.forEach(iana => {
         const timeEl = multiClockGrid.querySelector(`.mini-time[data-iana="${iana}"]`);
         if (timeEl) {
             const timeOptions = { timeZone: iana, hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
-            timeEl.textContent = new Date().toLocaleTimeString('en-US', timeOptions);
+            timeEl.textContent = now.toLocaleTimeString('en-US', timeOptions);
         }
     });
 }
-function updateTime(zone) { if (!zone) return; const timeOptions = { timeZone: zone.iana, hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false }; timeDisplayElement.textContent = new Date().toLocaleTimeString('en-US', timeOptions); }
 
-function addClockToStaging() {
+function addClockToDashboard() {
     const selectedZone = timeZones[currentIndex];
-    if (tempDashboardClocks.includes(selectedZone.iana)) { showToast(`${selectedZone.name} is already in the list.`); return; }
-    if (tempDashboardClocks.length >= 4) { showToast("Dashboard is full (max 4 clocks)."); return; }
-    tempDashboardClocks.push(selectedZone.iana);
-    renderDashboard(tempDashboardClocks);
+    if (dashboardClocks.includes(selectedZone.iana)) { showToast(`${selectedZone.name} is already in the dashboard.`); return; }
+    if (dashboardClocks.length >= 4) { showToast("Dashboard is full (max 4 clocks)."); return; }
+    dashboardClocks.push(selectedZone.iana);
+    localStorage.setItem('dashboardClocks', JSON.stringify(dashboardClocks));
+    showToast(`${selectedZone.name} added to dashboard.`);
+    renderDashboard();
 }
 
-function removeClockFromStaging(ianaToRemove) {
+function removeClockFromDashboard(ianaToRemove) {
     if (ianaToRemove === localUserIana) { showToast("Your local time cannot be removed."); return; }
-    tempDashboardClocks = tempDashboardClocks.filter(iana => iana !== ianaToRemove);
-    renderDashboard(tempDashboardClocks);
+    dashboardClocks = dashboardClocks.filter(iana => iana !== ianaToRemove);
+    localStorage.setItem('dashboardClocks', JSON.stringify(dashboardClocks));
+    const zone = timeZones.find(tz => tz.iana === ianaToRemove);
+    showToast(`${zone.name} removed from dashboard.`);
+    renderDashboard();
 }
 
 function changeTimeZone(newIndex) {
@@ -98,9 +107,8 @@ function startClock() { if (clockInterval) clearInterval(clockInterval); clockIn
 
 document.addEventListener('DOMContentLoaded', () => {
     localUserIana = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    const fromStorage = JSON.parse(localStorage.getItem('savedDashboardClocks'));
-    savedDashboardClocks = (fromStorage && fromStorage.length > 0) ? fromStorage : [localUserIana];
-    
+    dashboardClocks = [localUserIana]; // Always start with just local time
+
     buildDial();
     const firstDialItem = dialTrack.querySelector('.dial-item');
     if (firstDialItem) { dialItemWidth = firstDialItem.offsetWidth; }
@@ -108,32 +116,22 @@ document.addEventListener('DOMContentLoaded', () => {
     let initialIndex = timeZones.findIndex(tz => tz.iana === localUserIana);
     if (initialIndex === -1) initialIndex = 11;
     currentIndex = initialIndex;
-
+    
     updateStaticInfo(timeZones[currentIndex]);
     updateDialPosition();
     startClock();
 
     viewToggleBtn.addEventListener('click', () => {
-        const isMultiView = clockContainer.classList.contains('multi-view-active');
-        if (isMultiView) {
-            // -- SAVE AND EXIT --
-            savedDashboardClocks = [...tempDashboardClocks];
-            localStorage.setItem('savedDashboardClocks', JSON.stringify(savedDashboardClocks));
-            showToast("Dashboard saved!");
-            clockContainer.classList.remove('multi-view-active');
-            addClockBtn.classList.add('hidden');
-            viewToggleBtn.textContent = '▦';
-            viewToggleBtn.title = 'View Dashboard';
-        } else {
-            // -- ENTER DASHBOARD MODE --
-            const currentSelectedZone = timeZones[currentIndex];
-            tempDashboardClocks = [currentSelectedZone.iana]; // Start with the currently selected clock
-            renderDashboard(tempDashboardClocks);
-            clockContainer.classList.add('multi-view-active');
-            addClockBtn.classList.remove('hidden');
-            viewToggleBtn.textContent = '💾';
+        clockContainer.classList.toggle('multi-view-active');
+        addClockBtn.classList.toggle('hidden');
+        if (clockContainer.classList.contains('multi-view-active')) {
+            renderDashboard(); // Render the dashboard when switching to it
+            viewToggleBtn.innerHTML = '&#128421;'; // Save Icon
             viewToggleBtn.title = 'Save and Exit Dashboard';
+        } else {
+            viewToggleBtn.innerHTML = '▦';
+            viewToggleBtn.title = 'View Dashboard';
         }
     });
-    addClockBtn.addEventListener('click', addClockToStaging);
+    addClockBtn.addEventListener('click', addClockToDashboard);
 });
