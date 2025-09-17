@@ -62,8 +62,10 @@ function renderDashboard() {
 }
 
 function updateAllClocks() {
-    // Update the main single clock (it might be hidden, but keep it current)
-    updateTime(timeZones[currentIndex]);
+    // Update the main single clock
+    const mainZone = timeZones[currentIndex];
+    if(mainZone) updateTime(mainZone);
+    
     // Update all mini clocks in the dashboard
     dashboardClocks.forEach(iana => {
         const timeEl = multiClockGrid.querySelector(`.mini-time[data-iana="${iana}"]`);
@@ -72,6 +74,11 @@ function updateAllClocks() {
             timeEl.textContent = new Date().toLocaleTimeString('en-US', timeOptions);
         }
     });
+}
+
+function updateTime(zone) {
+    const timeOptions = { timeZone: zone.iana, hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
+    timeDisplayElement.textContent = new Date().toLocaleTimeString('en-US', timeOptions);
 }
 
 function addClockToDashboard() {
@@ -110,9 +117,9 @@ function startClock() { if (clockInterval) clearInterval(clockInterval); clockIn
 
 document.addEventListener('DOMContentLoaded', () => {
     localUserIana = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    const savedClocks = JSON.parse(localStorage.getItem('dashboardClocks'));
-    dashboardClocks = (savedClocks && savedClocks.length > 0) ? savedClocks : [localUserIana];
-    if (!dashboardClocks.includes(localUserIana)) { dashboardClocks.unshift(localUserIana); }
+    
+    // CHANGED: This line now RESETS the dashboard on every visit.
+    dashboardClocks = [localUserIana];
 
     buildDial();
     const firstDialItem = dialTrack.querySelector('.dial-item');
