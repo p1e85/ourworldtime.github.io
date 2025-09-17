@@ -15,16 +15,12 @@ function setupGestures() {
         const miniClock = ev.target.closest('.mini-clock');
 
         if (clockContainer.classList.contains('multi-view-active')) {
-            // MULTI-VIEW MODE
             if (miniClock && !miniClock.classList.contains('preview-clock')) {
-                // Clicked on a saved clock -> REMOVE
                 removeClockFromDashboard(miniClock.dataset.iana);
             } else {
-                // Clicked on the background or preview clock -> ADD
                 addClockToDashboard();
             }
         } else {
-            // SINGLE-VIEW MODE
             addClockToDashboard();
         }
     });
