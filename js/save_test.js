@@ -18,7 +18,6 @@ const dialContainer = document.getElementById('dial-container');
 const dialTrack = document.getElementById('dial-track');
 const toastElement = document.getElementById('toast-notification');
 const viewToggleBtn = document.getElementById('view-toggle-btn');
-const addClockBtn = document.getElementById('add-clock-btn');
 
 function updateStaticInfo(zone) { if (!zone) return; const now = new Date(); const dateOptions = { timeZone: zone.iana, weekday: 'long', month: 'long', day: 'numeric' }; const dateString = now.toLocaleDateString('en-US', dateOptions); const timeZoneFormatter = new Intl.DateTimeFormat('en-US', { timeZone: zone.iana, timeZoneName: 'shortOffset' }); const offsetString = timeZoneFormatter.formatToParts(now).find(part => part.type === 'timeZoneName').value; utcOffsetElement.textContent = offsetString.replace('GMT', 'UTC'); cityNameTextElement.textContent = zone.name; dateDisplayElement.textContent = dateString; const favoriteIana = localStorage.getItem('favoriteTimeZone'); mainFavoriteIcon.classList.toggle('hidden', favoriteIana !== zone.iana); const hour = parseInt(now.toLocaleTimeString('en-US', { timeZone: zone.iana, hour: '2-digit', hour12: false })); updateBackground(hour); }
 function updateBackground(hour) { const body = document.body; let newClass = ''; if (hour >= 5 && hour < 11) { newClass = 'morning'; } else if (hour >= 11 && hour < 17) { newClass = 'day'; } else if (hour >= 17 && hour < 21) { newClass = 'evening'; } else { newClass = 'night'; } if (body.className !== newClass) { body.className = newClass; } }
@@ -27,9 +26,9 @@ function buildDial() { timeZones.forEach((zone, index) => { const item = documen
 function showToast(message) { toastElement.textContent = message; toastElement.className = 'show'; setTimeout(() => { toastElement.className = 'hidden'; }, 3900); }
 
 function createMiniClock(zone) {
-    const clockEl = document.createElement('div'); clockEl.className = 'mini-clock';
+    const clockEl = document.createElement('div'); clockEl.className = 'mini-clock'; clockEl.dataset.iana = zone.iana;
     const nameEl = document.createElement('h3'); nameEl.textContent = zone.name;
-    const timeEl = document.createElement('div'); timeEl.className = 'mini-time'; timeEl.dataset.iana = zone.iana;
+    const timeEl = document.createElement('div'); timeEl.className = 'mini-time';
     const deleteBtn = document.createElement('button'); deleteBtn.className = 'delete-clock-btn'; deleteBtn.innerHTML = '&times;'; deleteBtn.title = `Remove ${zone.name}`;
     deleteBtn.addEventListener('click', () => removeClockFromDashboard(zone.iana));
     const leftSide = document.createElement('div'); leftSide.appendChild(nameEl);
@@ -53,30 +52,40 @@ function renderDashboard() {
 
 function updateAllClocks() {
     const now = new Date();
-    // Update main clock
-    const mainZone = timeZones[currentIndex];
-    if(mainZone) {
-        const timeOptions = { timeZone: mainZone.iana, hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
-        timeDisplayElement.textContent = now.toLocaleTimeString('en-US', timeOptions);
-    }
-    // Update dashboard clocks
-    dashboardClocks.forEach(iana => {
-        const timeEl = multiClockGrid.querySelector(`.mini-time[data-iana="${iana}"]`);
-        if (timeEl) {
-            const timeOptions = { timeZone: iana, hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
-            timeEl.textContent = now.toLocaleTimeString('en-US', timeOptions);
+    if (!clockContainer.classList.contains('multi-view-active')) {
+        const mainZone = timeZones[currentIndex];
+        if(mainZone) {
+            const timeOptions = { timeZone: mainZone.iana, hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
+            timeDisplayElement.textContent = now.toLocaleTimeString('en-US', timeOptions);
         }
-    });
+    } else {
+        dashboardClocks.forEach(iana => {
+            const timeEl = multiClockGrid.querySelector(`.mini-clock .mini-time[data-iana="${iana}"]`);
+            if (timeEl) {
+                const timeOptions = { timeZone: iana, hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
+                timeEl.textContent = now.toLocaleTimeString('en-US', timeOptions);
+            }
+        });
+    }
 }
 
-function addClockToDashboard() {
-    const selectedZone = timeZones[currentIndex];
-    if (dashboardClocks.includes(selectedZone.iana)) { showToast(`${selectedZone.name} is already in the dashboard.`); return; }
-    if (dashboardClocks.length >= 4) { showToast("Dashboard is full (max 4 clocks)."); return; }
-    dashboardClocks.push(selectedZone.iana);
+function toggleDashboardClock(iana) {
+    const indexInDashboard = dashboardClocks.indexOf(iana);
+    if (indexInDashboard > -1) {
+        if (iana === localUserIana) { showToast("Your local time cannot be removed."); return; }
+        dashboardClocks.splice(indexInDashboard, 1);
+        const zone = timeZones.find(tz => tz.iana === iana);
+        showToast(`${zone.name} removed from dashboard.`);
+    } else {
+        if (dashboardClocks.length >= 4) { showToast("Dashboard is full (max 4 clocks)."); return; }
+        dashboardClocks.push(iana);
+        const zone = timeZones.find(tz => tz.iana === iana);
+        showToast(`${zone.name} added to dashboard.`);
+    }
     localStorage.setItem('dashboardClocks', JSON.stringify(dashboardClocks));
-    showToast(`${selectedZone.name} added to dashboard.`);
-    renderDashboard();
+    if (clockContainer.classList.contains('multi-view-active')) {
+        renderDashboard();
+    }
 }
 
 function removeClockFromDashboard(ianaToRemove) {
@@ -91,47 +100,45 @@ function removeClockFromDashboard(ianaToRemove) {
 function changeTimeZone(newIndex) {
     currentIndex = newIndex;
     updateDialPosition();
-    if (!clockContainer.classList.contains('multi-view-active')) {
-        const zone = timeZones[newIndex];
-        infoWrapper.classList.add('slide-out');
-        setTimeout(() => {
-            updateStaticInfo(zone);
-            infoWrapper.classList.remove('slide-out');
-            infoWrapper.classList.add('slide-in');
-            setTimeout(() => infoWrapper.classList.remove('slide-in'), 300);
-        }, 150);
-    }
+    const zone = timeZones[newIndex];
+    infoWrapper.classList.add('slide-out');
+    setTimeout(() => {
+        updateStaticInfo(zone);
+        infoWrapper.classList.remove('slide-out');
+        infoWrapper.classList.add('slide-in');
+        setTimeout(() => infoWrapper.classList.remove('slide-in'), 300);
+    }, 150);
 }
 
 function startClock() { if (clockInterval) clearInterval(clockInterval); clockInterval = setInterval(updateAllClocks, 1000); }
 
 document.addEventListener('DOMContentLoaded', () => {
     localUserIana = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    dashboardClocks = [localUserIana]; // Always start with just local time
+    const savedClocks = JSON.parse(localStorage.getItem('dashboardClocks'));
+    dashboardClocks = (savedClocks && savedClocks.length > 0) ? savedClocks : [localUserIana];
+    if (!dashboardClocks.includes(localUserIana)) { dashboardClocks.unshift(localUserIana); }
 
     buildDial();
     const firstDialItem = dialTrack.querySelector('.dial-item');
     if (firstDialItem) { dialItemWidth = firstDialItem.offsetWidth; }
-
+    
     let initialIndex = timeZones.findIndex(tz => tz.iana === localUserIana);
     if (initialIndex === -1) initialIndex = 11;
     currentIndex = initialIndex;
-    
+
     updateStaticInfo(timeZones[currentIndex]);
     updateDialPosition();
     startClock();
 
     viewToggleBtn.addEventListener('click', () => {
         clockContainer.classList.toggle('multi-view-active');
-        addClockBtn.classList.toggle('hidden');
         if (clockContainer.classList.contains('multi-view-active')) {
-            renderDashboard(); // Render the dashboard when switching to it
-            viewToggleBtn.innerHTML = '&#128421;'; // Save Icon
-            viewToggleBtn.title = 'Save and Exit Dashboard';
+            renderDashboard();
+            viewToggleBtn.innerHTML = '🔳';
+            viewToggleBtn.title = 'Toggle Single Clock View';
         } else {
             viewToggleBtn.innerHTML = '▦';
             viewToggleBtn.title = 'View Dashboard';
         }
     });
-    addClockBtn.addEventListener('click', addClockToDashboard);
 });
