@@ -10,11 +10,12 @@ body {
 	transition: background 2s ease-in-out;
 	min-height: 100vh;
 	margin: 0;
+    /* CHANGED: Increased bottom padding to make space for the dial */
+    padding: 15px 15px 120px 15px;
 	color: white;
 	text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5);
     box-sizing: border-box;
     overflow-x: hidden;
-    /* CHANGED: Use Flexbox for main layout */
     display: flex;
     flex-direction: column;
 }
@@ -29,17 +30,16 @@ h1 {
     text-align: center;
     margin: 20px 0 10px 0;
     font-size: 2.5em;
-    flex-shrink: 0; /* Prevent title from shrinking */
+    flex-shrink: 0;
 }
 
-/* CHANGED: Clock container is now a flexible item */
 #clock-container {
 	border: 2px solid rgba(255, 255, 255, 0.5);
-    flex-grow: 1; /* This makes the container grow to fill available space */
-    min-height: 450px; /* Set a minimum height to prevent it from getting too small */
+    flex-grow: 1;
+    min-height: 450px;
     width: 100%;
-    max-width: 900px; /* Constrain the width on large screens */
-    margin: 0 auto 20px auto; /* Center the container */
+    max-width: 900px;
+    margin: 0 auto 20px auto;
 	border-radius: 15px;
 	background: rgba(0, 0, 0, 0.2);
 	backdrop-filter: blur(5px);
