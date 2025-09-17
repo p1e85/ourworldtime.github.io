@@ -41,24 +41,8 @@ h1 { font-family: 'Cormorant Garamond', serif; text-align: center; margin: 20px 
 /* --- Multi-Clock Styles --- */
 #clock-container.multi-view-active #clock-info-wrapper { display: none; }
 #clock-container.multi-view-active #multi-clock-grid { display: grid; }
-
-#multi-clock-grid {
-    display: none;
-    grid-template-columns: 1fr 1fr; /* 2 columns */
-    gap: 20px;
-    width: 100%;
-    height: 100%;
-    padding: 20px;
-    box-sizing: border-box;
-}
-
+#multi-clock-grid { display: none; grid-template-columns: 1fr 1fr; gap: 20px; width: 100%; height: 100%; padding: 20px; box-sizing: border-box; }
 .mini-clock { background-color: rgba(0, 0, 0, 0.2); border-radius: 10px; padding: 15px; display: flex; flex-direction: column; justify-content: center; align-items: center; overflow: hidden; }
 .mini-clock h3 { margin: 0 0 10px 0; font-size: 1.5em; font-family: 'Cormorant Garamond', serif; font-weight: 400; opacity: 0.9; }
 .mini-clock .mini-time { font-family: 'Cormorant Garamond', serif; font-size: 3em; font-weight: 700; }
-
-/* NEW: Style for the preview clock */
-.preview-clock {
-    grid-column: 1 / -1; /* Make this clock span both columns */
-    border: 2px dashed rgba(255, 255, 255, 0.5);
-    background-color: rgba(0, 0, 0, 0.4);
-}
+.preview-clock { grid-column: 1 / -1; border: 2px dashed rgba(255, 255, 255, 0.5); background-color: rgba(0, 0, 0, 0.4); }
