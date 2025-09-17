@@ -3,17 +3,14 @@ function setupGestures() {
     const dialContainer = document.getElementById('dial-container');
     const dialTrack = document.getElementById('dial-track');
 
-    const clockHammer = new Hammer(clockContainer, {
-        recognizers: [
-            [Hammer.Swipe, { direction: Hammer.DIRECTION_VERTICAL }],
-            [Hammer.Press, { time: 500 }],
-            [Hammer.Tap, { event: 'doubletap', taps: 2 }]
-        ]
-    });
+    const clockHammer = new Hammer(clockContainer);
+    // Restrict swipe to vertical only to prevent conflicts with dial
+    clockHammer.get('swipe').set({ direction: Hammer.DIRECTION_VERTICAL });
+    clockHammer.get('doubletap').set({ event: 'doubletap', taps: 2 });
+    clockHammer.get('press').set({ event: 'press', time: 500 });
 
     clockHammer.on('doubletap press', (ev) => {
         const miniClock = ev.target.closest('.mini-clock');
-
         if (clockContainer.classList.contains('multi-view-active')) {
             if (miniClock && !miniClock.classList.contains('preview-clock')) {
                 removeClockFromDashboard(miniClock.dataset.iana);
