@@ -5,22 +5,16 @@ function setupGestures() {
 
     const clockHammer = new Hammer(clockContainer);
     clockHammer.get('swipe').set({ direction: Hammer.DIRECTION_ALL });
-    // Enable double tap
     clockHammer.get('doubletap').set({ event: 'doubletap' });
-    // Enable long press
     clockHammer.get('press').set({ event: 'press', time: 500 });
 
-    // NEW: Double tap or long press to add/remove from dashboard
-    clockHammer.on('doubletap press', () => {
-        handleClockInteraction();
-    });
+    // This one handler now works for both single and multi-clock views
+    clockHammer.on('doubletap press', handleClockInteraction);
 
     clockHammer.on('swipedown', () => {
         const localIana = Intl.DateTimeFormat().resolvedOptions().timeZone;
         const localIndex = timeZones.findIndex(tz => tz.iana === localIana);
-        if (localIndex !== -1) {
-            changeTimeZone(localIndex);
-        }
+        if (localIndex !== -1) { changeTimeZone(localIndex); }
     });
 
     clockHammer.on('swipeup', () => {
