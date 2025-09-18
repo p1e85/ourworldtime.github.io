@@ -3,6 +3,9 @@ function setupGestures() {
     const dialContainer = document.getElementById('dial-container');
     const dialTrack = document.getElementById('dial-track');
 
+    // Note: This file assumes 'infoWrapper', 'timeZones', 'currentIndex', 
+    // and other variables/functions are available from 'time_v1.2.js'
+    
     const clockHammer = new Hammer(clockContainer);
     // Only listen for vertical swipes on the main clock
     clockHammer.get('swipe').set({ direction: Hammer.DIRECTION_VERTICAL });
