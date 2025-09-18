@@ -25,19 +25,48 @@ function buildDial() { timeZones.forEach((zone, index) => { const item = documen
 function showToast(message) { toastElement.textContent = message; toastElement.className = 'show'; setTimeout(() => { toastElement.className = 'hidden'; }, 3900); }
 
 function createMiniClock(zone) {
-    const clockEl = document.createElement('div'); clockEl.className = 'mini-clock';
-    const nameEl = document.createElement('h3'); nameEl.textContent = zone.name;
-    const timeEl = document.createElement('div'); timeEl.className = 'mini-time'; timeEl.dataset.iana = zone.iana;
-    clockEl.appendChild(nameEl); clockEl.appendChild(timeEl);
+    const clockEl = document.createElement('div');
+    clockEl.className = 'mini-clock';
+
+    const nameEl = document.createElement('h3');
+    nameEl.textContent = zone.name;
+
+    const timeEl = document.createElement('div');
+    timeEl.className = 'mini-time';
+    timeEl.dataset.iana = zone.iana; // Use data attribute for time updates
+
+    // NEW: Create elements for date and UTC
+    const dateEl = document.createElement('p');
+    dateEl.className = 'mini-date';
+
+    const utcEl = document.createElement('p');
+    utcEl.className = 'mini-utc';
+
+    clockEl.appendChild(nameEl);
+    clockEl.appendChild(timeEl);
+    clockEl.appendChild(dateEl); // Add to the clock element
+    clockEl.appendChild(utcEl);   // Add to the clock element
     return clockEl;
 }
 
 function renderDashboard() {
     multiClockGrid.innerHTML = '';
+    const now = new Date(); // Get the current time once for all clocks
+
     dashboardClocks.forEach(iana => {
         const zoneData = timeZones.find(tz => tz.iana === iana);
         if (zoneData) {
             const clockEl = createMiniClock(zoneData);
+
+            // Populate the new date and UTC elements
+            const dateOptions = { timeZone: zoneData.iana, month: 'long', day: 'numeric' };
+            const dateString = now.toLocaleDateString('en-US', dateOptions);
+            clockEl.querySelector('.mini-date').textContent = dateString;
+
+            const timeZoneFormatter = new Intl.DateTimeFormat('en-US', { timeZone: zoneData.iana, timeZoneName: 'shortOffset' });
+            const offsetString = (timeZoneFormatter.formatToParts(now).find(part => part.type === 'timeZoneName') || {}).value || '';
+            clockEl.querySelector('.mini-utc').textContent = offsetString.replace('GMT', 'UTC');
+
             multiClockGrid.appendChild(clockEl);
         }
     });
@@ -45,7 +74,6 @@ function renderDashboard() {
 
 function updateAllClocks() {
     const now = new Date();
-    // Update main clock if it's visible
     if (!infoWrapper.classList.contains('hidden')) {
         const mainZone = timeZones[currentIndex];
         if (mainZone) {
@@ -53,7 +81,6 @@ function updateAllClocks() {
             timeDisplayElement.textContent = now.toLocaleTimeString('en-US', timeOptions);
         }
     }
-    // Update dashboard clocks if they exist in the DOM
     dashboardClocks.forEach(iana => {
         const timeEl = multiClockGrid.querySelector(`.mini-clock .mini-time[data-iana="${iana}"]`);
         if (timeEl) {
@@ -95,22 +122,17 @@ document.addEventListener('DOMContentLoaded', () => {
     updateDialPosition();
     startClock();
     
-    // --- CORRECTED TOGGLE LOGIC ---
     viewToggleBtn.addEventListener('click', () => {
-        // Check which view is currently active by looking at the wrapper's class
         const isSingleViewActive = !infoWrapper.classList.contains('hidden');
-        
         if (isSingleViewActive) {
-            // -- Switch TO Dashboard View --
-            renderDashboard(); // Build the dashboard
-            infoWrapper.classList.add('hidden'); // Hide single view
-            multiClockGrid.classList.remove('hidden'); // Show dashboard view
+            renderDashboard();
+            infoWrapper.classList.add('hidden');
+            multiClockGrid.classList.remove('hidden');
             viewToggleBtn.innerHTML = '🔳';
             viewToggleBtn.title = 'View Single Clock';
         } else {
-            // -- Switch BACK to Single View --
-            infoWrapper.classList.remove('hidden'); // Show single view
-            multiClockGrid.classList.add('hidden'); // Hide dashboard view
+            infoWrapper.classList.remove('hidden');
+            multiClockGrid.classList.add('hidden');
             viewToggleBtn.innerHTML = '▦';
             viewToggleBtn.title = 'View Dashboard';
         }
