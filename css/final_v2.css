@@ -41,12 +41,22 @@ h1 { font-family: 'Cormorant Garamond', serif; text-align: center; margin: 20px 
 /* --- Multi-Clock & Button Styles --- */
 #view-toggle-btn { position: absolute; top: 20px; right: 25px; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.3); color: white; font-size: 1.5em; width: 50px; height: 50px; border-radius: 50%; cursor: pointer; transition: all 0.2s ease; z-index: 100; }
 #view-toggle-btn:hover { background: rgba(255, 255, 255, 0.2); }
-#clock-container.dashboard-active #clock-info-wrapper { display: none; }
-#clock-container.dashboard-active #multi-clock-grid { display: grid; }
-#multi-clock-grid { display: none; grid-template-columns: 1fr 1fr; gap: 20px; width: 100%; height: 100%; padding: 20px; box-sizing: border-box; }
-.mini-clock { background-color: rgba(0, 0, 0, 0.2); border-radius: 10px; padding: 15px; display: flex; flex-direction: column; justify-content: center; align-items: center; overflow: hidden; position: relative; /* ADDED: For positioning delete button */ }
+#multi-clock-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; width: 100%; height: 100%; padding: 20px; box-sizing: border-box; }
+.mini-clock { background-color: rgba(0, 0, 0, 0.2); border-radius: 10px; padding: 15px; display: flex; flex-direction: column; justify-content: center; align-items: center; overflow: hidden; }
 .mini-clock h3 { margin: 0 0 10px 0; font-size: 1.5em; font-family: 'Cormorant Garamond', serif; font-weight: 400; opacity: 0.9; text-align: center; }
 .mini-clock .mini-time { font-family: 'Cormorant Garamond', serif; font-size: 3em; font-weight: 700; }
+
+/* NEW: Styles for date and UTC in the dashboard */
+.mini-clock .mini-date {
+    font-size: 0.9em;
+    opacity: 0.8;
+    margin: 0;
+}
+.mini-clock .mini-utc {
+    font-size: 0.8em;
+    opacity: 0.7;
+    margin: 4px 0 0 0;
+}
 
 /* NEW: Styles for the delete button */
 .delete-clock-btn {
