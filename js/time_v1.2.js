@@ -5,7 +5,7 @@ let clockInterval;
 let dialItemWidth = 250;
 let dashboardClocks = [];
 let localUserIana = '';
-let dashboardTimeElements = {};
+let dashboardElementsCache = {};
 
 const clockContainer = document.getElementById('clock-container');
 const infoWrapper = document.getElementById('clock-info-wrapper');
@@ -48,24 +48,27 @@ function createMiniClock(zone) {
 
 function renderDashboard() {
     multiClockGrid.innerHTML = '';
-    dashboardTimeElements = {}; // Clear the cache
-    const now = new Date();
+    dashboardElementsCache = {}; // Clear the cache
+    
     dashboardClocks.forEach(iana => {
         const zoneData = timeZones.find(tz => tz.iana === iana);
         if (zoneData) {
             const clockEl = createMiniClock(zoneData);
-            // ... (rest of the function is the same) ...
             multiClockGrid.appendChild(clockEl);
             
-            // --- ADD THIS ---
-            // After adding the clock to the page, find and cache its time element
-            dashboardTimeElements[iana] = clockEl.querySelector('.mini-time');
+            // Find and cache all necessary elements for this clock
+            dashboardElementsCache[iana] = {
+                time: clockEl.querySelector('.mini-time'),
+                date: clockEl.querySelector('.mini-date'),
+                utc: clockEl.querySelector('.mini-utc')
+            };
         }
     });
 }
+}
 
 function updateAllClocks() {
-   const now = new Date();
+    const now = new Date();
     // Update the main clock (logic is unchanged)
     if (!infoWrapper.classList.contains('hidden')) {
         const mainZone = timeZones[currentIndex];
@@ -75,12 +78,22 @@ function updateAllClocks() {
         }
     }
     
-    // Update dashboard clocks using the cache
-    for (const iana in dashboardTimeElements) {
-        const timeEl = dashboardTimeElements[iana];
-        if (timeEl) {
+    // Update dashboard clocks using the new, complete cache
+    for (const iana in dashboardElementsCache) {
+        const elements = dashboardElementsCache[iana];
+        if (elements) {
+            // 1. Update Time (without seconds)
             const timeOptions = { timeZone: iana, hour: '2-digit', minute: '2-digit', hour12: false };
-            timeEl.textContent = now.toLocaleTimeString('en-US', timeOptions);
+            elements.time.textContent = now.toLocaleTimeString('en-US', timeOptions);
+
+            // 2. Update Date
+            const dateOptions = { timeZone: iana, month: 'long', day: 'numeric' };
+            elements.date.textContent = now.toLocaleDateString('en-US', dateOptions);
+
+            // 3. Update UTC Offset
+            const timeZoneFormatter = new Intl.DateTimeFormat('en-US', { timeZone: iana, timeZoneName: 'shortOffset' });
+            const offsetString = (timeZoneFormatter.formatToParts(now).find(part => part.type === 'timeZoneName') || {}).value || '';
+            elements.utc.textContent = offsetString.replace('GMT', 'UTC');
         }
     }
 }
@@ -88,7 +101,7 @@ function updateAllClocks() {
 function removeClockFromDashboard(ianaToRemove) {
     if (dashboardClocks.length <= 1) { showToast("Dashboard must contain at least one clock."); return; }
     dashboardClocks = dashboardClocks.filter(iana => iana !== ianaToRemove);
-    delete dashboardTimeElements[ianaToRemove]; // <--- ADD THIS LINE
+    delete dashboardElementsCache[ianaToRemove];
     localStorage.setItem('dashboardClocks', JSON.stringify(dashboardClocks));
     renderDashboard();
     const zone = timeZones.find(tz => tz.iana === ianaToRemove);
