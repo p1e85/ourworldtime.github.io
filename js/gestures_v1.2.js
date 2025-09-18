@@ -66,4 +66,3 @@ function setupGestures() {
     });
 }
 
-document.addEventListener('DOMContentLoaded', setupGestures);
