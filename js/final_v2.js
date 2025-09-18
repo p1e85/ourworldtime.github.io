@@ -4,6 +4,7 @@ let currentIndex;
 let clockInterval;
 let dialItemWidth = 250;
 let dashboardClocks = [];
+let localUserIana = '';
 
 const clockContainer = document.getElementById('clock-container');
 const infoWrapper = document.getElementById('clock-info-wrapper');
@@ -17,7 +18,6 @@ const mainFavoriteIcon = document.getElementById('main-favorite-icon');
 const dialContainer = document.getElementById('dial-container');
 const dialTrack = document.getElementById('dial-track');
 const toastElement = document.getElementById('toast-notification');
-let localUserIana = '';
 
 function updateStaticInfo(zone) { if (!zone) return; const now = new Date(); const dateOptions = { timeZone: zone.iana, weekday: 'long', month: 'long', day: 'numeric' }; const dateString = now.toLocaleDateString('en-US', dateOptions); const timeZoneFormatter = new Intl.DateTimeFormat('en-US', { timeZone: zone.iana, timeZoneName: 'shortOffset' }); const offsetString = (timeZoneFormatter.formatToParts(now).find(part => part.type === 'timeZoneName') || {}).value || ''; utcOffsetElement.textContent = offsetString.replace('GMT', 'UTC'); cityNameTextElement.textContent = zone.name; dateDisplayElement.textContent = dateString; const favoriteIana = localStorage.getItem('favoriteTimeZone'); mainFavoriteIcon.classList.toggle('hidden', favoriteIana !== zone.iana); const hour = parseInt(now.toLocaleTimeString('en-US', { timeZone: zone.iana, hour: '2-digit', hour12: false })); updateBackground(hour); }
 function updateBackground(hour) { const body = document.body; let newClass = ''; if (hour >= 5 && hour < 11) { newClass = 'morning'; } else if (hour >= 11 && hour < 17) { newClass = 'day'; } else if (hour >= 17 && hour < 21) { newClass = 'evening'; } else { newClass = 'night'; } if (body.className !== newClass) { body.className = newClass; } }
@@ -29,17 +29,20 @@ function createMiniClock(zone) {
     const clockEl = document.createElement('div'); clockEl.className = 'mini-clock';
     const nameEl = document.createElement('h3'); nameEl.textContent = zone.name;
     const timeEl = document.createElement('div'); timeEl.className = 'mini-time'; timeEl.dataset.iana = zone.iana;
-    
-    // NEW: Create the delete button
+    // ADDED: Create elements for date and UTC
+    const dateEl = document.createElement('p'); dateEl.className = 'mini-date';
+    const utcEl = document.createElement('p'); utcEl.className = 'mini-utc';
+
     const deleteBtn = document.createElement('button');
     deleteBtn.className = 'delete-clock-btn';
-    deleteBtn.innerHTML = '&times;'; // The "X" symbol
+    deleteBtn.innerHTML = '&times;';
     deleteBtn.title = `Remove ${zone.name}`;
     deleteBtn.addEventListener('click', () => removeClockFromDashboard(zone.iana));
 
     clockEl.appendChild(nameEl);
     clockEl.appendChild(timeEl);
-    // Only add the delete button if it's not the user's local time
+    clockEl.appendChild(dateEl); // ADDED
+    clockEl.appendChild(utcEl);   // ADDED
     if (zone.iana !== localUserIana) {
         clockEl.appendChild(deleteBtn);
     }
@@ -48,10 +51,19 @@ function createMiniClock(zone) {
 
 function renderDashboard() {
     multiClockGrid.innerHTML = '';
+    const now = new Date();
     dashboardClocks.forEach(iana => {
         const zoneData = timeZones.find(tz => tz.iana === iana);
         if (zoneData) {
             const clockEl = createMiniClock(zoneData);
+
+            // ADDED: Populate the new date and UTC elements
+            const dateOptions = { timeZone: zoneData.iana, month: 'long', day: 'numeric' };
+            clockEl.querySelector('.mini-date').textContent = now.toLocaleDateString('en-US', dateOptions);
+            const timeZoneFormatter = new Intl.DateTimeFormat('en-US', { timeZone: zoneData.iana, timeZoneName: 'shortOffset' });
+            const offsetString = (timeZoneFormatter.formatToParts(now).find(part => part.type === 'timeZoneName') || {}).value || '';
+            clockEl.querySelector('.mini-utc').textContent = offsetString.replace('GMT', 'UTC');
+
             multiClockGrid.appendChild(clockEl);
         }
     });
@@ -75,20 +87,11 @@ function updateAllClocks() {
     });
 }
 
-// NEW: Function to remove a clock from the dashboard
 function removeClockFromDashboard(ianaToRemove) {
-    // Prevent removing the local time zone
-    if (ianaToRemove === localUserIana) {
-        showToast("Your local time zone cannot be removed.");
-        return;
-    }
-    // Filter the array to remove the specified clock
+    if (ianaToRemove === localUserIana) { showToast("Your local time zone cannot be removed."); return; }
     dashboardClocks = dashboardClocks.filter(iana => iana !== ianaToRemove);
-    // Save the new list to storage
     localStorage.setItem('dashboardClocks', JSON.stringify(dashboardClocks));
-    // Redraw the dashboard
     renderDashboard();
-    
     const zone = timeZones.find(tz => tz.iana === ianaToRemove);
     showToast(`${zone.name} removed from dashboard.`);
 }
@@ -110,9 +113,8 @@ function startClock() { if (clockInterval) clearInterval(clockInterval); clockIn
 
 document.addEventListener('DOMContentLoaded', () => {
     localUserIana = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    // UPDATED: Load the saved dashboard from storage
-    const savedClocks = JSON.parse(localStorage.getItem('dashboardClocks'));
     const defaultClocks = ['America/New_York', 'Europe/London', 'Asia/Tokyo', localUserIana];
+    const savedClocks = JSON.parse(localStorage.getItem('dashboardClocks'));
     dashboardClocks = (savedClocks && savedClocks.length > 0) ? savedClocks : [...new Set(defaultClocks)];
     if (!dashboardClocks.includes(localUserIana)) {
         dashboardClocks.unshift(localUserIana);
