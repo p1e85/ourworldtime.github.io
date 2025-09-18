@@ -29,10 +29,8 @@ function createMiniClock(zone) {
     const clockEl = document.createElement('div'); clockEl.className = 'mini-clock';
     const nameEl = document.createElement('h3'); nameEl.textContent = zone.name;
     const timeEl = document.createElement('div'); timeEl.className = 'mini-time'; timeEl.dataset.iana = zone.iana;
-    // ADDED: Create elements for date and UTC
     const dateEl = document.createElement('p'); dateEl.className = 'mini-date';
     const utcEl = document.createElement('p'); utcEl.className = 'mini-utc';
-
     const deleteBtn = document.createElement('button');
     deleteBtn.className = 'delete-clock-btn';
     deleteBtn.innerHTML = '&times;';
@@ -41,8 +39,8 @@ function createMiniClock(zone) {
 
     clockEl.appendChild(nameEl);
     clockEl.appendChild(timeEl);
-    clockEl.appendChild(dateEl); // ADDED
-    clockEl.appendChild(utcEl);   // ADDED
+    clockEl.appendChild(dateEl);
+    clockEl.appendChild(utcEl);
     if (zone.iana !== localUserIana) {
         clockEl.appendChild(deleteBtn);
     }
@@ -57,7 +55,6 @@ function renderDashboard() {
         if (zoneData) {
             const clockEl = createMiniClock(zoneData);
 
-            // ADDED: Populate the new date and UTC elements
             const dateOptions = { timeZone: zoneData.iana, month: 'long', day: 'numeric' };
             clockEl.querySelector('.mini-date').textContent = now.toLocaleDateString('en-US', dateOptions);
             const timeZoneFormatter = new Intl.DateTimeFormat('en-US', { timeZone: zoneData.iana, timeZoneName: 'shortOffset' });
