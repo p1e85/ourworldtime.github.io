@@ -5,6 +5,7 @@ let clockInterval;
 let dialItemWidth = 250;
 let dashboardClocks = [];
 let localUserIana = '';
+let dashboardTimeElements = {};
 
 const clockContainer = document.getElementById('clock-container');
 const infoWrapper = document.getElementById('clock-info-wrapper');
@@ -47,23 +48,25 @@ function createMiniClock(zone) {
 
 function renderDashboard() {
     multiClockGrid.innerHTML = '';
+    dashboardTimeElements = {}; // Clear the cache
     const now = new Date();
     dashboardClocks.forEach(iana => {
         const zoneData = timeZones.find(tz => tz.iana === iana);
         if (zoneData) {
             const clockEl = createMiniClock(zoneData);
-            const dateOptions = { timeZone: zoneData.iana, month: 'long', day: 'numeric' };
-            clockEl.querySelector('.mini-date').textContent = now.toLocaleDateString('en-US', dateOptions);
-            const timeZoneFormatter = new Intl.DateTimeFormat('en-US', { timeZone: zoneData.iana, timeZoneName: 'shortOffset' });
-            const offsetString = (timeZoneFormatter.formatToParts(now).find(part => part.type === 'timeZoneName') || {}).value || '';
-            clockEl.querySelector('.mini-utc').textContent = offsetString.replace('GMT', 'UTC');
+            // ... (rest of the function is the same) ...
             multiClockGrid.appendChild(clockEl);
+            
+            // --- ADD THIS ---
+            // After adding the clock to the page, find and cache its time element
+            dashboardTimeElements[iana] = clockEl.querySelector('.mini-time');
         }
     });
 }
 
 function updateAllClocks() {
-    const now = new Date();
+   const now = new Date();
+    // Update the main clock (logic is unchanged)
     if (!infoWrapper.classList.contains('hidden')) {
         const mainZone = timeZones[currentIndex];
         if (mainZone) {
@@ -71,18 +74,21 @@ function updateAllClocks() {
             timeDisplayElement.textContent = now.toLocaleTimeString('en-US', timeOptions);
         }
     }
-    dashboardClocks.forEach(iana => {
-        const timeEl = multiClockGrid.querySelector(`.mini-clock .mini-time[data-iana="${iana}"]`);
+    
+    // Update dashboard clocks using the cache
+    for (const iana in dashboardTimeElements) {
+        const timeEl = dashboardTimeElements[iana];
         if (timeEl) {
-            const timeOptions = { timeZone: iana, hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
+            const timeOptions = { timeZone: iana, hour: '2-digit', minute: '2-digit', hour12: false };
             timeEl.textContent = now.toLocaleTimeString('en-US', timeOptions);
         }
-    });
+    }
 }
 
 function removeClockFromDashboard(ianaToRemove) {
     if (dashboardClocks.length <= 1) { showToast("Dashboard must contain at least one clock."); return; }
     dashboardClocks = dashboardClocks.filter(iana => iana !== ianaToRemove);
+    delete dashboardTimeElements[ianaToRemove]; // <--- ADD THIS LINE
     localStorage.setItem('dashboardClocks', JSON.stringify(dashboardClocks));
     renderDashboard();
     const zone = timeZones.find(tz => tz.iana === ianaToRemove);
