@@ -3,7 +3,7 @@ const timeZones = [ { name: "Samoa, Midway", iana: "Pacific/Samoa" }, { name: "H
 let currentIndex;
 let clockInterval;
 let dialItemWidth = 250;
-let dashboardClocks = []; // This will be our static list
+let dashboardClocks = [];
 
 const clockContainer = document.getElementById('clock-container');
 const infoWrapper = document.getElementById('clock-info-wrapper');
@@ -45,13 +45,15 @@ function renderDashboard() {
 
 function updateAllClocks() {
     const now = new Date();
-    // Update main clock
-    const mainZone = timeZones[currentIndex];
-    if (mainZone) {
-        const timeOptions = { timeZone: mainZone.iana, hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
-        timeDisplayElement.textContent = now.toLocaleTimeString('en-US', timeOptions);
+    // Update main clock if it's visible
+    if (!infoWrapper.classList.contains('hidden')) {
+        const mainZone = timeZones[currentIndex];
+        if (mainZone) {
+            const timeOptions = { timeZone: mainZone.iana, hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
+            timeDisplayElement.textContent = now.toLocaleTimeString('en-US', timeOptions);
+        }
     }
-    // Update dashboard clocks
+    // Update dashboard clocks if they exist in the DOM
     dashboardClocks.forEach(iana => {
         const timeEl = multiClockGrid.querySelector(`.mini-clock .mini-time[data-iana="${iana}"]`);
         if (timeEl) {
@@ -78,9 +80,8 @@ function startClock() { if (clockInterval) clearInterval(clockInterval); clockIn
 
 document.addEventListener('DOMContentLoaded', () => {
     const localUserIana = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    // Setup the static dashboard list
     dashboardClocks = ['America/New_York', 'Europe/London', 'Asia/Tokyo', localUserIana];
-    dashboardClocks = [...new Set(dashboardClocks)]; // Remove duplicates if local is one of the defaults
+    dashboardClocks = [...new Set(dashboardClocks)];
 
     buildDial();
     const firstDialItem = dialTrack.querySelector('.dial-item');
@@ -92,15 +93,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
     updateStaticInfo(timeZones[currentIndex]);
     updateDialPosition();
-    renderDashboard(); // Pre-build the dashboard in the background
     startClock();
     
+    // --- CORRECTED TOGGLE LOGIC ---
     viewToggleBtn.addEventListener('click', () => {
-        const isDashboardActive = clockContainer.classList.toggle('dashboard-active');
-        if (isDashboardActive) {
+        // Check which view is currently active by looking at the wrapper's class
+        const isSingleViewActive = !infoWrapper.classList.contains('hidden');
+        
+        if (isSingleViewActive) {
+            // -- Switch TO Dashboard View --
+            renderDashboard(); // Build the dashboard
+            infoWrapper.classList.add('hidden'); // Hide single view
+            multiClockGrid.classList.remove('hidden'); // Show dashboard view
             viewToggleBtn.innerHTML = '🔳';
             viewToggleBtn.title = 'View Single Clock';
         } else {
+            // -- Switch BACK to Single View --
+            infoWrapper.classList.remove('hidden'); // Show single view
+            multiClockGrid.classList.add('hidden'); // Hide dashboard view
             viewToggleBtn.innerHTML = '▦';
             viewToggleBtn.title = 'View Dashboard';
         }
