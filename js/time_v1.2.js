@@ -18,6 +18,7 @@ const mainFavoriteIcon = document.getElementById('main-favorite-icon');
 const dialContainer = document.getElementById('dial-container');
 const dialTrack = document.getElementById('dial-track');
 const toastElement = document.getElementById('toast-notification');
+const addClockBtn = document.getElementById('add-clock-btn');
 
 function updateStaticInfo(zone) { if (!zone) return; const now = new Date(); const dateOptions = { timeZone: zone.iana, weekday: 'long', month: 'long', day: 'numeric' }; const dateString = now.toLocaleDateString('en-US', dateOptions); const timeZoneFormatter = new Intl.DateTimeFormat('en-US', { timeZone: zone.iana, timeZoneName: 'shortOffset' }); const offsetString = (timeZoneFormatter.formatToParts(now).find(part => part.type === 'timeZoneName') || {}).value || ''; utcOffsetElement.textContent = offsetString.replace('GMT', 'UTC'); cityNameTextElement.textContent = zone.name; dateDisplayElement.textContent = dateString; const favoriteIana = localStorage.getItem('favoriteTimeZone'); mainFavoriteIcon.classList.toggle('hidden', favoriteIana !== zone.iana); const hour = parseInt(now.toLocaleTimeString('en-US', { timeZone: zone.iana, hour: '2-digit', hour12: false })); updateBackground(hour); }
 
@@ -53,13 +54,14 @@ function renderDashboard() {
     multiClockGrid.innerHTML = '';
     dashboardElementsCache = {}; // Clear the cache
     
+    // First, render all the existing clocks
     dashboardClocks.forEach(iana => {
         const zoneData = timeZones.find(tz => tz.iana === iana);
         if (zoneData) {
             const clockEl = createMiniClock(zoneData);
             multiClockGrid.appendChild(clockEl);
             
-            // Find and cache all necessary elements for this clock
+            // Cache the elements for updating
             dashboardElementsCache[iana] = {
                 time: clockEl.querySelector('.mini-time'),
                 date: clockEl.querySelector('.mini-date'),
@@ -67,6 +69,21 @@ function renderDashboard() {
             };
         }
     });
+
+    // --- NEW: Conditionally add the '+' placeholder ---
+    if (dashboardClocks.length < 6) {
+        const placeholder = document.createElement('div');
+        placeholder.className = 'add-clock-placeholder';
+        placeholder.textContent = '+';
+        placeholder.title = 'Add a new clock';
+
+        // When clicked, it will switch back to the main single-clock view
+        placeholder.addEventListener('click', () => {
+            viewToggleBtn.click();
+        });
+
+        multiClockGrid.appendChild(placeholder);
+    }
 }
 
 function updateAllClocks() {
@@ -125,6 +142,27 @@ function changeTimeZone(newIndex) {
 
 function startClock() { if (clockInterval) clearInterval(clockInterval); clockInterval = setInterval(updateAllClocks, 1000); }
 
+function addClockToDashboard() {
+    // 1. Check if the dashboard is already full
+    if (dashboardClocks.length >= 6) {
+        showToast("Dashboard is full (max 6 clocks).");
+        return;
+    }
+
+    const currentZone = timeZones[currentIndex];
+    
+    // 2. Check if the clock is already in the dashboard
+    if (dashboardClocks.includes(currentZone.iana)) {
+        showToast(`${currentZone.name} is already on the dashboard.`);
+        return;
+    }
+
+    // 3. Add the new clock and save it
+    dashboardClocks.push(currentZone.iana);
+    localStorage.setItem('dashboardClocks', JSON.stringify(dashboardClocks));
+    showToast(`${currentZone.name} added to dashboard.`);
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
     // --- NEW: Load timezones from JSON file ---
     try {
@@ -176,6 +214,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             viewToggleBtn.title = 'View Dashboard';
         }
     });
+    addClockBtn.addEventListener('click', addClockToDashboard);
     
     setTimeout(() => { dialTrack.classList.add('nudge'); setTimeout(() => { dialTrack.classList.remove('nudge'); }, 500); }, 1500);
 });
