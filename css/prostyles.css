@@ -1,0 +1,61 @@
+@keyframes slideOutUp { from { transform: translateY(0); opacity: 1; } to { transform: translateY(-40px); opacity: 0; } }
+@keyframes slideInUp { from { transform: translateY(40px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+@keyframes animateGradient { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+@keyframes fadeinout { 0%, 100% { top: -100px; opacity: 0; } 10%, 90% { top: 30px; opacity: 1; } }
+@keyframes nudge { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(-20px); } }
+
+body { background-size: 400% 400%; animation: animateGradient 20s ease infinite; transition: background 2s ease-in-out; min-height: 100vh; margin: 0; color: white; text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5); box-sizing: border-box; overflow-x: hidden; }
+main { padding-bottom: 120px; }
+body.morning { background: linear-gradient(-45deg, #f8cdda, #a5d3f2, #f5e6a8); }
+body.day { background: linear-gradient(-45deg, #89d8f8, #c4e9f8, #f0f8ff); }
+body.evening { background: linear-gradient(-45deg, #7b68b6, #e47ec7, #f7ac83); }
+body.night { background: linear-gradient(-45deg, #0f2027, #203a43, #2c5364); }
+h1 { font-family: 'Cormorant Garamond', serif; text-align: center; margin: 20px 0 10px 0; padding: 0 15px; font-size: 2.5em; }
+
+.top-controls { display: flex; justify-content: space-between; align-items: center; max-width: 900px; margin: 0 auto 15px auto; padding: 0 10px; box-sizing: border-box; }
+#view-toggle-btn, #format-toggle-btn { position: static; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.3); color: white; width: 50px; height: 50px; border-radius: 50%; cursor: pointer; transition: all 0.2s ease; z-index: 100; }
+#view-toggle-btn { font-size: 1.5em; }
+#format-toggle-btn { font-size: 1.1em; font-weight: bold; }
+#view-toggle-btn:hover, #format-toggle-btn:hover { background: rgba(255, 255, 255, 0.2); }
+
+#clock-container { border: 2px solid rgba(255, 255, 255, 0.5); height: 750px; margin: 0 auto 20px auto; border-radius: 15px; background: rgba(0, 0, 0, 0.2); backdrop-filter: blur(5px); display: flex; justify-content: center; align-items: center; text-align: center; position: relative; overflow: hidden; }
+#clock-info-wrapper { width: 100%; }
+.slide-out { animation: slideOutUp 0.3s forwards ease-in; }
+.slide-in { animation: slideInUp 0.3s forwards ease-out; }
+.city-display { display: flex; align-items: center; justify-content: center; }
+#city-name-text { font-family: 'Cormorant Garamond', serif; font-weight: 400; font-size: 2.5em; margin: 0; }
+#main-favorite-icon { font-size: 1.5em; margin-right: 15px; width: 1.5em; transition: opacity 0.3s ease, width 0.3s ease, margin-right 0.3s ease; }
+#main-favorite-icon.hidden { width: 0; margin-right: 0; }
+#add-clock-btn { background: none; border: none; color: white; font-size: 1.8em; cursor: pointer; opacity: 0.7; transition: opacity 0.2s ease, transform 0.2s ease; margin-left: 15px; padding: 0; line-height: 1; }
+#add-clock-btn:hover { opacity: 1; transform: scale(1.1); }
+#time-display { font-family: 'Cormorant Garamond', serif; font-weight: 700; font-size: 6em; letter-spacing: 2px; margin: 10px 0; }
+#utc-offset { font-family: sans-serif; font-size: 1.2em; opacity: 0.8; margin: 0; }
+#date-display { font-family: sans-serif; font-size: 1.5em; opacity: 0.9; margin: 5px 0; }
+
+#dial-container { position: fixed; bottom: 0; left: 0; right: 0; height: 100px; background: rgba(0, 0, 0, 0.25); backdrop-filter: blur(8px); border-top: 1px solid rgba(255, 255, 255, 0.2); display: flex; align-items: center; user-select: none; }
+#dial-container::before, #dial-container::after { content: ''; position: absolute; top: 0; bottom: 0; width: 50px; z-index: 5; pointer-events: none; }
+#dial-container::before { left: 0; background: linear-gradient(to right, rgba(0,0,0,0.4), transparent); }
+#dial-container::after { right: 0; background: linear-gradient(to left, rgba(0,0,0,0.4), transparent); }
+#dial-pointer { position: absolute; top: -1px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 14px solid transparent; border-right: 14px solid transparent; border-top: 14px solid white; z-index: 10; }
+#dial-track { display: flex; position: absolute; height: 100%; transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+.dial-track.nudge { animation: nudge 0.5s ease-in-out; }
+.dial-item { flex-shrink: 0; width: 250px; height: 100%; display: flex; justify-content: center; align-items: center; padding: 0 5px; box-sizing: border-box; font-family: sans-serif; font-size: 18px; color: white; cursor: pointer; opacity: 0.5; transition: all 0.4s ease; overflow: hidden; }
+.dial-item.active { opacity: 1; font-weight: bold; transform: scale(1.1); }
+.dial-item-name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.dial-favorite-star { font-size: 1.2em; flex-shrink: 0; width: 1.2em; margin-right: 8px; transition: opacity 0.3s ease, width 0.3s ease, margin 0.3s ease; }
+.dial-favorite-star.hidden { width: 0; margin: 0; }
+
+#toast-notification { position: fixed; top: 30px; left: 50%; transform: translateX(-50%); background-color: rgba(30, 30, 30, 0.9); backdrop-filter: blur(5px); color: white; padding: 15px 25px; border-radius: 50px; z-index: 1000; font-family: sans-serif; }
+#toast-notification.show { animation: fadeinout 4s ease-in-out; }
+.hidden { display: none !important; }
+
+#multi-clock-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; width: 100%; height: 100%; padding: 20px; box-sizing: border-box; align-content: start; }
+.mini-clock { background-color: rgba(0, 0, 0, 0.2); border-radius: 10px; padding: 15px; display: flex; flex-direction: column; justify-content: center; align-items: center; overflow: hidden; position: relative; min-height: 150px; }
+.mini-clock h3 { margin: 0 0 10px 0; font-size: 1.5em; font-family: 'Cormorant Garamond', serif; font-weight: 400; opacity: 0.9; text-align: center; }
+.mini-clock .mini-time { font-family: 'Cormorant Garamond', serif; font-size: 3em; font-weight: 700; margin: 5px 0; }
+.mini-clock .mini-date { font-size: 0.9em; opacity: 0.8; margin: 0; }
+.mini-clock .mini-utc { font-size: 0.8em; opacity: 0.7; margin: 4px 0 0 0; }
+.delete-clock-btn { position: absolute; top: 5px; right: 8px; background: none; border: none; color: white; font-size: 1.8em; opacity: 0.4; cursor: pointer; transition: opacity 0.2s ease; }
+.delete-clock-btn:hover { opacity: 1; }
+.add-clock-placeholder { background-color: transparent; border: 2px dashed rgba(255, 255, 255, 0.4); border-radius: 10px; cursor: pointer; display: flex; justify-content: center; align-items: center; font-size: 4em; color: rgba(255, 255, 255, 0.4); transition: all 0.2s ease; min-height: 150px; }
+.add-clock-placeholder:hover { background-color: rgba(255, 255, 255, 0.1); color: rgba(255, 255, 255, 0.8); border-color: rgba(255, 255, 255, 0.8); }
