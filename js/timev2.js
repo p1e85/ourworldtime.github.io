@@ -1,5 +1,5 @@
 // IMPORT the gestures setup function from the other file
-import { setupGestures } from './gestures_v1.2.js';
+import { setupGestures } from './gesturesv2.js';
 
 // EXPORT the variables and functions needed by other files
 export let timeZones = [];
