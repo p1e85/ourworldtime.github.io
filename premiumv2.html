@@ -13,8 +13,13 @@
 <body>
     <main>
         <h1>Our World Time Premium</h1>
-        <div id="clock-container">
+
+        <div class="top-controls">
             <button id="view-toggle-btn" title="View Dashboard">▦</button>
+            <button id="format-toggle-btn" title="Toggle 12/24 Hour Format">12h</button>
+        </div>
+        
+        <div id="clock-container">
             <div id="clock-info-wrapper">
                 <div class="city-display">
                     <h2 id="city-name-text"></h2>
@@ -32,6 +37,9 @@
     	</div>
     </main>
     <div id="dial-container">
+        <div id="search-container">
+            <input type="text" id="dial-search" placeholder="Search for a city...">
+        </div>
         <div id="dial-pointer"></div>
         <div id="dial-track"></div>
     </div>
