@@ -1,4 +1,4 @@
-import { setupGestures } from './gestures_v1.2.js';
+import { setupGestures } from './gesturesv2.js';
 
 export let timeZones = [];
 export let currentIndex;
