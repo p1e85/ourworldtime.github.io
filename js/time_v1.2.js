@@ -70,17 +70,16 @@ function renderDashboard() {
         }
     });
 
-    // --- NEW: Conditionally add the '+' placeholder ---
+    // Conditionally add the '+' placeholder
     if (dashboardClocks.length < 6) {
         const placeholder = document.createElement('div');
         placeholder.className = 'add-clock-placeholder';
         placeholder.textContent = '+';
         placeholder.title = 'Add a new clock';
 
-        // When clicked, it will switch back to the main single-clock view
-        placeholder.addEventListener('click', () => {
-            viewToggleBtn.click();
-        });
+        // --- THIS IS THE CHANGE ---
+        // When clicked, it will now directly add the selected clock.
+        placeholder.addEventListener('click', addClockToDashboard);
 
         multiClockGrid.appendChild(placeholder);
     }
@@ -161,6 +160,10 @@ function addClockToDashboard() {
     dashboardClocks.push(currentZone.iana);
     localStorage.setItem('dashboardClocks', JSON.stringify(dashboardClocks));
     showToast(`${currentZone.name} added to dashboard.`);
+    
+    // 4. --- ADD THIS LINE ---
+    //    Refresh the dashboard to show the newly added clock.
+    renderDashboard();
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
