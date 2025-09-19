@@ -49,3 +49,24 @@ h1 { font-family: 'Cormorant Garamond', serif; text-align: center; margin: 20px 
 .mini-clock .mini-utc { font-size: 0.8em; opacity: 0.7; margin: 4px 0 0 0; }
 .delete-clock-btn { position: absolute; top: 5px; right: 8px; background: none; border: none; color: white; font-size: 1.8em; opacity: 0.4; cursor: pointer; transition: opacity 0.2s ease; }
 .delete-clock-btn:hover { opacity: 1; }
+
+/* Style for the 'Add New Clock' placeholder in the dashboard grid */
+.add-clock-placeholder {
+    background-color: transparent;
+    border: 2px dashed rgba(255, 255, 255, 0.4);
+    border-radius: 10px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 4em;
+    color: rgba(255, 255, 255, 0.4);
+    transition: all 0.2s ease;
+    min-height: 150px; /* Ensures it has a size */
+}
+
+.add-clock-placeholder:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.8);
+    border-color: rgba(255, 255, 255, 0.8);
+}
