@@ -45,7 +45,34 @@ export function updateDialPosition() {
     });
 }
 
-function buildDial() { timeZones.forEach((zone, index) => { const item = document.createElement('div'); item.className = 'dial-item'; item.dataset.index = index; const star = document.createElement('span'); star.className = 'dial-favorite-star hidden'; star.textContent = '⭐'; const name = document.createElement('span'); name.className = 'dial-item-name'; name.textContent = zone.name; item.appendChild(star); item.appendChild(name); item.addEventListener('click', () => changeTimeZone(index)); dialTrack.appendChild(item); }); }
+//function buildDial() { timeZones.forEach((zone, index) => { const item = document.createElement('div'); item.className = 'dial-item'; item.dataset.index = index; const star = document.createElement('span'); star.className = 'dial-favorite-star hidden'; star.textContent = '⭐'; const name = document.createElement('span'); name.className = 'dial-item-name'; name.textContent = zone.name; item.appendChild(star); item.appendChild(name); item.addEventListener('click', () => changeTimeZone(index)); dialTrack.appendChild(item); }); }
+function renderDial(zonesToDisplay) {
+    dialTrack.innerHTML = ''; // Clear the current dial
+    zonesToDisplay.forEach(zone => {
+        // Find the original index to keep everything linked correctly
+        const originalIndex = timeZones.findIndex(tz => tz.iana === zone.iana);
+
+        const item = document.createElement('div');
+        item.className = 'dial-item';
+        item.dataset.index = originalIndex; // Use the original index
+        
+        const star = document.createElement('span');
+        star.className = 'dial-favorite-star hidden';
+        star.textContent = '⭐';
+        
+        const name = document.createElement('span');
+        name.className = 'dial-item-name';
+        name.textContent = zone.name;
+        
+        item.appendChild(star);
+        item.appendChild(name);
+        item.addEventListener('click', () => changeTimeZone(originalIndex));
+        dialTrack.appendChild(item);
+    });
+    // After rebuilding, we need to update the dial's position
+    updateDialPosition();
+}
+
 export function showToast(message) { toastElement.textContent = message; toastElement.className = 'show'; setTimeout(() => { toastElement.className = 'hidden'; }, 3900); }
 function createMiniClock(zone) { const clockEl = document.createElement('div'); clockEl.className = 'mini-clock'; const nameEl = document.createElement('h3'); nameEl.textContent = zone.name; const timeEl = document.createElement('div'); timeEl.className = 'mini-time'; const dateEl = document.createElement('p'); dateEl.className = 'mini-date'; const utcEl = document.createElement('p'); utcEl.className = 'mini-utc'; const deleteBtn = document.createElement('button'); deleteBtn.className = 'delete-clock-btn'; deleteBtn.innerHTML = '&times;'; deleteBtn.title = `Remove ${zone.name}`; deleteBtn.addEventListener('click', () => removeClockFromDashboard(zone.iana)); clockEl.appendChild(nameEl); clockEl.appendChild(timeEl); clockEl.appendChild(dateEl); clockEl.appendChild(utcEl); if (zone.iana !== localUserIana) { clockEl.appendChild(deleteBtn); } return clockEl; }
 function renderDashboard() { multiClockGrid.innerHTML = ''; dashboardElementsCache = {}; dashboardClocks.forEach(iana => { const zoneData = timeZones.find(tz => tz.iana === iana); if (zoneData) { const clockEl = createMiniClock(zoneData); multiClockGrid.appendChild(clockEl); dashboardElementsCache[iana] = { time: clockEl.querySelector('.mini-time'), date: clockEl.querySelector('.mini-date'), utc: clockEl.querySelector('.mini-utc') }; } }); if (dashboardClocks.length < 6) { const placeholder = document.createElement('div'); placeholder.className = 'add-clock-placeholder'; placeholder.textContent = '+'; placeholder.title = 'Add a new clock'; placeholder.addEventListener('click', addClockToDashboard); multiClockGrid.appendChild(placeholder); } }
@@ -117,7 +144,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         dashboardClocks.unshift(localUserIana); 
     } 
 
-    buildDial(); 
+    //buildDial();
+    renderDial(timeZones);
 
     // --- THIS IS THE FIX ---
     // After building the dial, measure the actual width of one of its items.
@@ -175,7 +203,22 @@ document.addEventListener('DOMContentLoaded', async () => {
     }); 
     
     addClockBtn.addEventListener('click', addClockToDashboard); 
-    
+
+    const dialSearchInput = document.getElementById('dial-search');
+    dialSearchInput.addEventListener('input', (e) => {
+        const searchTerm = e.target.value.toLowerCase();
+        
+        if (searchTerm) {
+            const filteredZones = timeZones.filter(zone => 
+                zone.name.toLowerCase().includes(searchTerm)
+            );
+            renderDial(filteredZones);
+        } else {
+            // If search is cleared, render the full list
+            renderDial(timeZones);
+        }
+    });
+  
     setTimeout(() => { 
         dialTrack.classList.add('nudge'); 
         setTimeout(() => { 
