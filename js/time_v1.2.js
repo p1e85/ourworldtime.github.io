@@ -70,7 +70,15 @@ function renderDial(zonesToDisplay) {
         dialTrack.appendChild(item);
     });
     // After rebuilding, we need to update the dial's position
-    updateDialPosition();
+        if (zonesToDisplay.length > 0) {
+        // If there are results, find the original index of the FIRST item...
+        const newIndex = timeZones.findIndex(tz => tz.iana === zonesToDisplay[0].iana);
+        // ...and snap the view to it.
+        changeTimeZone(newIndex);
+    } else {
+        // If there are no results, just update the position of the empty dial.
+        updateDialPosition();
+    }
 }
 
 export function showToast(message) { toastElement.textContent = message; toastElement.className = 'show'; setTimeout(() => { toastElement.className = 'hidden'; }, 3900); }
