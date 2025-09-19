@@ -4,7 +4,7 @@ import { setupGestures } from './gestures_v1.2.js';
 // EXPORT the variables and functions needed by other files
 export let timeZones = [];
 export let currentIndex;
-export const dialItemWidth = 250;
+export let dialItemWidth = 250;
 export const infoWrapper = document.getElementById('clock-info-wrapper');
 
 let clockInterval;
@@ -36,4 +36,70 @@ export function changeTimeZone(newIndex) { currentIndex = newIndex; updateDialPo
 function startClock() { if (clockInterval) clearInterval(clockInterval); clockInterval = setInterval(updateAllClocks, 1000); }
 function addClockToDashboard() { if (dashboardClocks.length >= 6) { showToast("Dashboard is full (max 6 clocks)."); return; } const currentZone = timeZones[currentIndex]; if (dashboardClocks.includes(currentZone.iana)) { showToast(`${currentZone.name} is already on the dashboard.`); return; } dashboardClocks.push(currentZone.iana); localStorage.setItem('dashboardClocks', JSON.stringify(dashboardClocks)); showToast(`${currentZone.name} added to dashboard.`); renderDashboard(); }
 
-document.addEventListener('DOMContentLoaded', async () => { try { const response = await fetch('timezones.json'); if (!response.ok) { throw new Error(`HTTP error! status: ${response.status}`); } timeZones = await response.json(); } catch (error) { console.error("Could not load timezones:", error); return; } localUserIana = Intl.DateTimeFormat().resolvedOptions().timeZone; const defaultClocks = [localUserIana, 'America/New_York', 'Europe/London', 'Asia/Tokyo']; try { const savedClocks = JSON.parse(localStorage.getItem('dashboardClocks')); dashboardClocks = (savedClocks && savedClocks.length > 0) ? savedClocks : [...new Set(defaultClocks)]; } catch (e) { dashboardClocks = [...new Set(defaultClocks)]; } if (!dashboardClocks.includes(localUserIana)) { dashboardClocks.unshift(localUserIana); } buildDial(); let initialIndex = timeZones.findIndex(tz => tz.iana === localUserIana); if (initialIndex === -1) initialIndex = 11; currentIndex = initialIndex; updateStaticInfo(timeZones[currentIndex]); updateDialPosition(); startClock(); setupGestures(); viewToggleBtn.addEventListener('click', () => { const isSingleViewActive = !infoWrapper.classList.contains('hidden'); if (isSingleViewActive) { renderDashboard(); infoWrapper.classList.add('hidden'); multiClockGrid.classList.remove('hidden'); viewToggleBtn.innerHTML = '🔳'; viewToggleBtn.title = 'View Single Clock'; } else { infoWrapper.classList.remove('hidden'); multiClockGrid.classList.add('hidden'); viewToggleBtn.innerHTML = '▦'; viewToggleBtn.title = 'View Dashboard'; } }); addClockBtn.addEventListener('click', addClockToDashboard); setTimeout(() => { dialTrack.classList.add('nudge'); setTimeout(() => { dialTrack.classList.remove('nudge'); }, 500); }, 1500); });
+document.addEventListener('DOMContentLoaded', async () => { 
+    try { 
+        const response = await fetch('timezones.json'); 
+        if (!response.ok) { 
+            throw new Error(`HTTP error! status: ${response.status}`); 
+        } 
+        timeZones = await response.json(); 
+    } catch (error) { 
+        console.error("Could not load timezones:", error); 
+        return; 
+    } 
+    localUserIana = Intl.DateTimeFormat().resolvedOptions().timeZone; 
+    const defaultClocks = [localUserIana, 'America/New_York', 'Europe/London', 'Asia/Tokyo']; 
+    try { 
+        const savedClocks = JSON.parse(localStorage.getItem('dashboardClocks')); 
+        dashboardClocks = (savedClocks && savedClocks.length > 0) ? savedClocks : [...new Set(defaultClocks)]; 
+    } catch (e) { 
+        dashboardClocks = [...new Set(defaultClocks)]; 
+    } 
+    if (!dashboardClocks.includes(localUserIana)) { 
+        dashboardClocks.unshift(localUserIana); 
+    } 
+
+    buildDial(); 
+
+    // --- THIS IS THE FIX ---
+    // After building the dial, measure the actual width of one of its items.
+    const firstDialItem = dialTrack.querySelector('.dial-item');
+    if (firstDialItem) {
+        dialItemWidth = firstDialItem.offsetWidth;
+    }
+    // --- END FIX ---
+
+    let initialIndex = timeZones.findIndex(tz => tz.iana === localUserIana); 
+    if (initialIndex === -1) initialIndex = 11; 
+    
+    currentIndex = initialIndex; 
+    updateStaticInfo(timeZones[currentIndex]); 
+    updateDialPosition(); 
+    startClock(); 
+    setupGestures(); 
+
+    viewToggleBtn.addEventListener('click', () => { 
+        const isSingleViewActive = !infoWrapper.classList.contains('hidden'); 
+        if (isSingleViewActive) { 
+            renderDashboard(); 
+            infoWrapper.classList.add('hidden'); 
+            multiClockGrid.classList.remove('hidden'); 
+            viewToggleBtn.innerHTML = '🔳'; 
+            viewToggleBtn.title = 'View Single Clock'; 
+        } else { 
+            infoWrapper.classList.remove('hidden'); 
+            multiClockGrid.classList.add('hidden'); 
+            viewToggleBtn.innerHTML = '▦'; 
+            viewToggleBtn.title = 'View Dashboard'; 
+        } 
+    }); 
+    
+    addClockBtn.addEventListener('click', addClockToDashboard); 
+    
+    setTimeout(() => { 
+        dialTrack.classList.add('nudge'); 
+        setTimeout(() => { 
+            dialTrack.classList.remove('nudge'); 
+        }, 500); 
+    }, 1500); 
+});
