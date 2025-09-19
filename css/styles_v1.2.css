@@ -72,7 +72,7 @@ h1 { font-family: 'Cormorant Garamond', serif; text-align: center; margin: 20px 
 }
 
 #format-toggle-btn {
-    position: absolute;
+    position: static;
     top: 20px;
     right: 25px; /* Positioned top right */
     background: rgba(255, 255, 255, 0.1);
