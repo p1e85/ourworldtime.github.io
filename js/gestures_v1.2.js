@@ -6,8 +6,7 @@ import {
     changeTimeZone, 
     showToast, 
     updateStaticInfo, 
-    updateDialPosition,
-    updateDialSelection
+    updateDialPosition 
 } from './time_v1.2.js';
 
 export function setupGestures() {
@@ -33,17 +32,11 @@ export function setupGestures() {
         if (ev.type === 'panend') {
             dialTrack.style.transition = 'transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
             const currentOffset = parseFloat(dialTrack.dataset.initialOffset) + ev.deltaX;
+            let newIndex = Math.round(-currentOffset / dialItemWidth);
             
-            let visibleItemIndex = Math.round(-currentOffset / dialItemWidth);
-            
-            const visibleItems = dialTrack.querySelectorAll('.dial-item');
-            visibleItemIndex = Math.max(0, Math.min(visibleItems.length - 1, visibleItemIndex));
-
-            const targetItem = visibleItems[visibleItemIndex];
-            if (targetItem) {
-                const originalIndex = parseInt(targetItem.dataset.index, 10);
-                updateDialSelection(originalIndex);
-            }
+            // This simpler logic works because the dial is never filtered
+            newIndex = Math.max(0, Math.min(timeZones.length - 1, newIndex));
+            changeTimeZone(newIndex);
         }
     });
 
