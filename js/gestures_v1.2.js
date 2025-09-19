@@ -1,4 +1,3 @@
-// IMPORT everything we need from the main time.js file
 import { 
     timeZones, 
     currentIndex, 
@@ -7,10 +6,10 @@ import {
     changeTimeZone, 
     showToast, 
     updateStaticInfo, 
-    updateDialPosition 
+    updateDialPosition,
+    updateDialSelection
 } from './time_v1.2.js';
 
-// EXPORT the main setup function so it can be called by time.js
 export function setupGestures() {
     const dialContainer = document.getElementById('dial-container');
     const dialTrack = document.getElementById('dial-track');
@@ -34,14 +33,17 @@ export function setupGestures() {
         if (ev.type === 'panend') {
             dialTrack.style.transition = 'transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
             const currentOffset = parseFloat(dialTrack.dataset.initialOffset) + ev.deltaX;
-            let newIndex = Math.round(-currentOffset / dialItemWidth);
-            newIndex = Math.max(0, Math.min(timeZones.length - 1, newIndex));
-            if (ev.velocityX < -0.5) {
-                newIndex = Math.min(timeZones.length - 1, newIndex + 1);
-            } else if (ev.velocityX > 0.5) {
-                newIndex = Math.max(0, newIndex - 1);
+            
+            let visibleItemIndex = Math.round(-currentOffset / dialItemWidth);
+            
+            const visibleItems = dialTrack.querySelectorAll('.dial-item');
+            visibleItemIndex = Math.max(0, Math.min(visibleItems.length - 1, visibleItemIndex));
+
+            const targetItem = visibleItems[visibleItemIndex];
+            if (targetItem) {
+                const originalIndex = parseInt(targetItem.dataset.index, 10);
+                updateDialSelection(originalIndex);
             }
-            changeTimeZone(newIndex);
         }
     });
 
