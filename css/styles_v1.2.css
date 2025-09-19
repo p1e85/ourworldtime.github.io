@@ -39,7 +39,6 @@ h1 { font-family: 'Cormorant Garamond', serif; text-align: center; margin: 20px 
 .hidden { display: none !important; }
 
 /* --- Multi-Clock & Button Styles --- */
-#view-toggle-btn { position: absolute; top: 20px; left: 25px; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.3); color: white; font-size: 1.5em; width: 50px; height: 50px; border-radius: 50%; cursor: pointer; transition: all 0.2s ease; z-index: 100; }
 #view-toggle-btn:hover { background: rgba(255, 255, 255, 0.2); }
 #multi-clock-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; width: 100%; height: 100%; padding: 20px; box-sizing: border-box; align-content: start; }
 .mini-clock { background-color: rgba(0, 0, 0, 0.2); border-radius: 10px; padding: 15px; display: flex; flex-direction: column; justify-content: center; align-items: center; overflow: hidden; position: relative; }
@@ -71,15 +70,29 @@ h1 { font-family: 'Cormorant Garamond', serif; text-align: center; margin: 20px 
     border-color: rgba(255, 255, 255, 0.8);
 }
 
-#format-toggle-btn {
-    position: static;
-    top: 20px;
-    right: 25px; /* Positioned top right */
+#format-toggle-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+/* Main container for the top buttons */
+.top-controls {
+    display: flex;
+    justify-content: space-between; /* Pushes children to opposite ends */
+    align-items: center;
+    max-width: 900px;
+    margin: 0 auto 15px auto;
+    padding: 0 10px;
+    box-sizing: border-box;
+}
+
+/* --- STYLES FOR THE BUTTONS IN THE TOP CONTROL BAR --- */
+
+/* Common styles for BOTH buttons */
+#view-toggle-btn, #format-toggle-btn {
+    position: static; /* Ensures they stay in the flex container */
     background: rgba(255, 255, 255, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.3);
     color: white;
-    font-size: 1.1em; /* Slightly smaller than other buttons */
-    font-weight: bold;
     width: 50px;
     height: 50px;
     border-radius: 50%;
@@ -88,16 +101,17 @@ h1 { font-family: 'Cormorant Garamond', serif; text-align: center; margin: 20px 
     z-index: 100;
 }
 
-#format-toggle-btn:hover {
-    background: rgba(255, 255, 255, 0.2);
+/* Specific font sizes for each button */
+#view-toggle-btn {
+    font-size: 1.5em;
 }
 
-.top-controls {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    max-width: 900px; /* Matches the max-width of the clock container */
-    margin: 0 auto 15px auto; /* Provides spacing */
-    padding: 0 10px;
-    box-sizing: border-box;
+#format-toggle-btn {
+    font-size: 1.1em;
+    font-weight: bold;
+}
+
+/* Common hover effect for BOTH buttons */
+#view-toggle-btn:hover, #format-toggle-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
 }
