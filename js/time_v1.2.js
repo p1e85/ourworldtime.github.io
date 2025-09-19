@@ -22,10 +22,28 @@ const mainFavoriteIcon = document.getElementById('main-favorite-icon');
 const dialTrack = document.getElementById('dial-track');
 const toastElement = document.getElementById('toast-notification');
 const addClockBtn = document.getElementById('add-clock-btn');
+const dialContainer = document.getElementById('dial-container');
 
 export function updateStaticInfo(zone) { if (!zone) return; const now = new Date(); const dateOptions = { timeZone: zone.iana, weekday: 'long', month: 'long', day: 'numeric' }; const dateString = now.toLocaleDateString('en-US', dateOptions); const timeZoneFormatter = new Intl.DateTimeFormat('en-US', { timeZone: zone.iana, timeZoneName: 'shortOffset' }); const offsetString = (timeZoneFormatter.formatToParts(now).find(part => part.type === 'timeZoneName') || {}).value || ''; utcOffsetElement.textContent = offsetString.replace('GMT', 'UTC'); cityNameTextElement.textContent = zone.name; dateDisplayElement.textContent = dateString; const favoriteIana = localStorage.getItem('favoriteTimeZone'); mainFavoriteIcon.classList.toggle('hidden', favoriteIana !== zone.iana); const hour = parseInt(now.toLocaleTimeString('en-US', { timeZone: zone.iana, hour: '2-digit', hour12: false })); updateBackground(hour); }
 function updateBackground(hour) { const body = document.body; let newClass = ''; if (hour >= 5 && hour < 11) { newClass = 'morning'; } else if (hour >= 11 && hour < 17) { newClass = 'day'; } else if (hour >= 17 && hour < 21) { newClass = 'evening'; } else { newClass = 'night'; } if (body.className !== newClass) { body.className = newClass; } }
-export function updateDialPosition() { const containerWidth = infoWrapper.offsetWidth; const offset = (containerWidth / 2) - (dialItemWidth / 2) - (currentIndex * dialItemWidth); dialTrack.style.transform = `translateX(${offset}px)`; const allItems = document.querySelectorAll('.dial-item'); const favoriteIana = localStorage.getItem('favoriteTimeZone'); allItems.forEach((item, index) => { const zone = timeZones[index]; item.classList.toggle('active', index === currentIndex); item.querySelector('.dial-favorite-star').classList.toggle('hidden', zone.iana !== favoriteIana); }); }
+export function updateDialPosition() {
+  
+    // We now use the width of the dialContainer, not the infoWrapper.
+    const containerWidth = dialContainer.offsetWidth; 
+    
+    const offset = (containerWidth / 2) - (dialItemWidth / 2) - (currentIndex * dialItemWidth);
+    dialTrack.style.transform = `translateX(${offset}px)`;
+    
+    const allItems = document.querySelectorAll('.dial-item');
+    const favoriteIana = localStorage.getItem('favoriteTimeZone');
+    
+    allItems.forEach((item, index) => {
+        const zone = timeZones[index];
+        item.classList.toggle('active', index === currentIndex);
+        item.querySelector('.dial-favorite-star').classList.toggle('hidden', zone.iana !== favoriteIana);
+    });
+}
+
 function buildDial() { timeZones.forEach((zone, index) => { const item = document.createElement('div'); item.className = 'dial-item'; item.dataset.index = index; const star = document.createElement('span'); star.className = 'dial-favorite-star hidden'; star.textContent = '⭐'; const name = document.createElement('span'); name.className = 'dial-item-name'; name.textContent = zone.name; item.appendChild(star); item.appendChild(name); item.addEventListener('click', () => changeTimeZone(index)); dialTrack.appendChild(item); }); }
 export function showToast(message) { toastElement.textContent = message; toastElement.className = 'show'; setTimeout(() => { toastElement.className = 'hidden'; }, 3900); }
 function createMiniClock(zone) { const clockEl = document.createElement('div'); clockEl.className = 'mini-clock'; const nameEl = document.createElement('h3'); nameEl.textContent = zone.name; const timeEl = document.createElement('div'); timeEl.className = 'mini-time'; const dateEl = document.createElement('p'); dateEl.className = 'mini-date'; const utcEl = document.createElement('p'); utcEl.className = 'mini-utc'; const deleteBtn = document.createElement('button'); deleteBtn.className = 'delete-clock-btn'; deleteBtn.innerHTML = '&times;'; deleteBtn.title = `Remove ${zone.name}`; deleteBtn.addEventListener('click', () => removeClockFromDashboard(zone.iana)); clockEl.appendChild(nameEl); clockEl.appendChild(timeEl); clockEl.appendChild(dateEl); clockEl.appendChild(utcEl); if (zone.iana !== localUserIana) { clockEl.appendChild(deleteBtn); } return clockEl; }
