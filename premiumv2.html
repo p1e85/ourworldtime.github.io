@@ -3,27 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Live Clock & Time Zone Converter | Our World Time</title>
+    <title>v2.3 Pro Timezones | Our World Time</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/premiumv2.css">
-    <link rel="stylesheet" href="css/responsivev2.css">
+    <link rel="stylesheet" href="css/styles_v1.2.css">
+    <link rel="stylesheet" href="css/responsive_v1.2.css">
 </head>
 <body>
     <main>
-        <h1>Our World Time Premium</h1>
-
+        <h1>Our World Time</h1>
         <div class="top-controls">
             <button id="view-toggle-btn" title="View Dashboard">▦</button>
-            <button id="format-toggle-btn" title="Toggle 12/24 Hour Format">12h</button>
+            <button id="format-toggle-btn" title="Toggle 12/24 Hour Format"></button>
         </div>
-        
         <div id="clock-container">
             <div id="clock-info-wrapper">
                 <div class="city-display">
                     <h2 id="city-name-text"></h2>
                     <span id="main-favorite-icon" class="hidden">⭐</span>
+                    <button id="add-clock-btn" title="Add to Dashboard">⊕</button>
                 </div>
                 <div id="time-display"></div>
                 <p id="date-display"></p>
@@ -31,23 +30,18 @@
             </div>
             <div id="multi-clock-grid" class="hidden"></div>
         </div>
-
         <div style="text-align: center; opacity: 0.7; padding: 20px 40px; max-width: 800px; margin: 0 auto;">
-        	<p>Our World Time is a real-time world clock and time zone converter. Use the interactive dial to find the current local time in cities from around the globe, perfect for scheduling international meetings or keeping in touch with friends and family abroad. Using the Dial, Swipe up to favorite timezone, swipe down for local timezone</p>
-    	</div>
+            <p>Our World Time is a real-time world clock and time zone converter. Use the interactive dial to find the current local time in cities from around the globe.</p>
+        </div>
     </main>
     <div id="dial-container">
-     <!--   <div id="search-container">
-            <input type="text" id="dial-search" placeholder="Search for a city...">
-        </div> -->
         <div id="dial-pointer"></div>
         <div id="dial-track"></div>
     </div>
-    
     <div id="toast-notification" class="hidden"></div>
 </body>
 <footer>
-    <script src="js/timev2.js" type="module"></script>
+    <script src="js/time_v1.2.js" type="module"></script>
     <script src="https://hammerjs.github.io/dist/hammer.min.js"></script>
 </footer>
 </html>
