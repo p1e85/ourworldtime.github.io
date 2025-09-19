@@ -41,7 +41,7 @@ h1 { font-family: 'Cormorant Garamond', serif; text-align: center; margin: 20px 
 /* --- Multi-Clock & Button Styles --- */
 #view-toggle-btn { position: absolute; top: 20px; left: 25px; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.3); color: white; font-size: 1.5em; width: 50px; height: 50px; border-radius: 50%; cursor: pointer; transition: all 0.2s ease; z-index: 100; }
 #view-toggle-btn:hover { background: rgba(255, 255, 255, 0.2); }
-#multi-clock-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; width: 100%; height: 100%; padding: 20px; box-sizing: border-box; align-content: start; }
+#multi-clock-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; width: 100%; height: 100%; padding: 20px; box-sizing: border-box; align-content: start; }
 .mini-clock { background-color: rgba(0, 0, 0, 0.2); border-radius: 10px; padding: 15px; display: flex; flex-direction: column; justify-content: center; align-items: center; overflow: hidden; position: relative; }
 .mini-clock h3 { margin: 0 0 10px 0; font-size: 1.5em; font-family: 'Cormorant Garamond', serif; font-weight: 400; opacity: 0.9; text-align: center; }
 .mini-clock .mini-time { font-family: 'Cormorant Garamond', serif; font-size: 3em; font-weight: 700; margin: 5px 0; }
