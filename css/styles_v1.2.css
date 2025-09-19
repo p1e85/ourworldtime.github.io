@@ -91,3 +91,13 @@ h1 { font-family: 'Cormorant Garamond', serif; text-align: center; margin: 20px 
 #format-toggle-btn:hover {
     background: rgba(255, 255, 255, 0.2);
 }
+
+.top-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 900px; /* Matches the max-width of the clock container */
+    margin: 0 auto 15px auto; /* Provides spacing */
+    padding: 0 10px;
+    box-sizing: border-box;
+}
