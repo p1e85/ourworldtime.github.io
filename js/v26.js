@@ -74,7 +74,6 @@ function buildDial() {
     zonesToDisplay.forEach((zone) => {
         const item = document.createElement('div');
         item.className = 'dial-item';
-        // IMPORTANT: Store the *actual* index from the master timeZones array
         item.dataset.actualIndex = timeZones.findIndex(tz => tz.iana === zone.iana);
         
         const star = document.createElement('span');
@@ -100,9 +99,8 @@ function buildDial() {
 
 function updateDialPosition() {
     const zonesToDisplay = (currentView === 'pro') ? timeZones : timeZones.slice(0, 24);
-    const displayIndex = zonesToDisplay.findIndex(tz => tz.iana === timeZones[currentIndex].iana);
+    const displayIndex = zonesToDisplay.findIndex(tz => tz.iana === timeZones[currentIndex]?.iana);
 
-    // If the current city isn't in the free dial, don't try to position it.
     if (displayIndex === -1) return;
 
     const containerWidth = dialContainer.offsetWidth;
@@ -168,7 +166,54 @@ function startClock() {
 }
 
 function setupGestures() {
-    // Gesture setup remains unchanged
+    const hammer = new Hammer(dialContainer);
+    hammer.get('pan').set({ direction: Hammer.DIRECTION_HORIZONTAL });
+    hammer.get('swipe').set({ direction: Hammer.DIRECTION_VERTICAL });
+    
+    hammer.on('panstart panmove panend', (ev) => {
+        dialTrack.style.transition = 'none';
+        if (ev.type === 'panstart') {
+            const currentTransform = new WebKitCSSMatrix(window.getComputedStyle(dialTrack).transform);
+            dialTrack.dataset.initialOffset = currentTransform.m41;
+        }
+        if (ev.type === 'panmove') {
+            const initialOffset = parseFloat(dialTrack.dataset.initialOffset) || 0;
+            const newOffset = initialOffset + ev.deltaX;
+            dialTrack.style.transform = `translateX(${newOffset}px)`;
+        }
+        if (ev.type === 'panend') {
+            dialTrack.style.transition = 'transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+            const currentOffset = parseFloat(dialTrack.dataset.initialOffset) + ev.deltaX;
+            
+            // --- THIS IS THE CORRECTED LOGIC ---
+            const visibleDialItems = dialTrack.querySelectorAll('.dial-item');
+            const maxVisibleIndex = visibleDialItems.length - 1;
+
+            let targetDisplayIndex = Math.round(-currentOffset / dialItemWidth);
+            targetDisplayIndex = Math.max(0, Math.min(maxVisibleIndex, targetDisplayIndex));
+            
+            const targetDialItem = visibleDialItems[targetDisplayIndex];
+            if (targetDialItem) {
+                const actualIndex = parseInt(targetDialItem.dataset.actualIndex, 10);
+                changeTimeZone(actualIndex);
+            }
+        }
+    });
+
+    hammer.on('swipedown', () => changeTimeZoneToLocal());
+    hammer.on('swipeup', () => {
+        const favoriteIana = localStorage.getItem('favoriteTimeZone');
+        const currentZone = timeZones[currentIndex];
+        if (favoriteIana === currentZone?.iana) {
+            localStorage.removeItem('favoriteTimeZone');
+            showToast("⭐ Favorite removed.");
+        } else if (currentZone) {
+            localStorage.setItem('favoriteTimeZone', currentZone.iana);
+            showToast(`⭐ Favorite set to ${currentZone.name}.`);
+        }
+        updateStaticInfo(currentZone);
+        updateDialPosition();
+    });
 }
 
 function changeTimeZoneToLocal() {
@@ -342,7 +387,6 @@ async function initialize() {
     document.body.classList.toggle('free-mode', !isPro);
     modeSwitchCheckbox.checked = currentView === 'pro';
     
-    // CORRECTED LOGIC: Pro users ALWAYS get the full list of timezones.
     const jsonFileToLoad = isPro ? 'timezones_pro.json' : 'timezones_free.json';
     
     try {
@@ -361,7 +405,8 @@ async function initialize() {
     
     setupButtonListeners();
     setupModalListeners();
-    changeTimeZone(initialIndex); // This will call buildDial internally
+    buildDial();
+    changeTimeZone(initialIndex);
     startClock();
     setupGestures();
 
