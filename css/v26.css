@@ -39,55 +39,80 @@ h1 { font-family: 'Cormorant Garamond', serif; text-align: center; margin: 20px 
 /* =============================================
    Light Mode / High Contrast Styles
    ============================================= */
-body.day {
+body.morning,
+body.day,
+body.evening {
     color: #2c3e50; /* A dark, soft black for all text */
     text-shadow: 1px 1px 4px rgba(255, 255, 255, 0.7); /* A light text shadow for depth */
 }
 
 /* Update buttons and specific elements for light background */
+body.morning .top-controls button,
 body.day .top-controls button,
-body.day .close-btn {
+body.evening .top-controls button,
+body.morning .close-btn,
+body.day .close-btn,
+body.evening .close-btn {
     color: #2c3e50;
     border-color: rgba(44, 62, 80, 0.4);
     background: rgba(44, 62, 80, 0.05); /* Darker, more contrast */
 }
 
+body.morning .top-controls button:hover,
 body.day .top-controls button:hover,
-body.day .close-btn:hover {
+body.evening .top-controls button:hover,
+body.morning .close-btn:hover,
+body.day .close-btn:hover,
+body.evening .close-btn:hover {
     background: rgba(44, 62, 80, 0.15); /* Darker hover */
 }
 
 /* Update dial for light mode */
-body.day #dial-container {
+body.morning #dial-container,
+body.day #dial-container,
+body.evening #dial-container {
     background: rgba(255, 255, 255, 0.25);
     border-top-color: rgba(44, 62, 80, 0.2);
 }
 
-body.day #dial-pointer {
+body.morning #dial-pointer,
+body.day #dial-pointer,
+body.evening #dial-pointer {
     border-top-color: #2c3e50;
 }
 
-body.day .dial-item {
+body.morning .dial-item,
+body.day .dial-item,
+body.evening .dial-item {
     color: #2c3e50;
 }
 
 /* Update modal for light mode */
-body.day .modal-content {
+body.morning .modal-content,
+body.day .modal-content,
+body.evening .modal-content {
     background: rgba(240, 248, 255, 0.8); /* A light, glassy background */
     border-color: rgba(44, 62, 80, 0.2);
     color: #2c3e50;
 }
-body.day #unlock-code-input {
+
+body.morning #unlock-code-input,
+body.day #unlock-code-input,
+body.evening #unlock-code-input {
     background: rgba(255, 255, 255, 0.5);
     border-color: rgba(44, 62, 80, 0.3);
     color: #2c3e50;
 }
-body.day #unlock-code-input::placeholder {
+body.morning #unlock-code-input::placeholder,
+body.day #unlock-code-input::placeholder,
+body.evening #unlock-code-input::placeholder {
     color: rgba(44, 62, 80, 0.5);
 }
 
 /* Update TOS link */
-body.day #tos-link {
+body.morning #tos-link,
+body.day #tos-link,
+body.evening #tos-link {
     color: #2c3e50;
 }
 
@@ -298,3 +323,4 @@ footer { text-align: center; padding: 20px 0; font-family: sans-serif; position:
 .modal-separator:not(:empty)::before { margin-right: .25em; }
 .modal-separator:not(:empty)::after { margin-left: .25em; }
 .small-text { font-size: 0.8em; opacity: 0.7; margin-top: 10px; }
+
