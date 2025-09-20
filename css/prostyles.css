@@ -26,7 +26,6 @@ body.evening { background: linear-gradient(-45deg, #7b68b6, #e47ec7, #f7ac83); }
 body.night { background: linear-gradient(-45deg, #0f2027, #203a43, #2c5364); }
 h1 { font-family: 'Cormorant Garamond', serif; text-align: center; margin: 20px 0 10px 0; font-size: 2.5em; }
 
-/* THIS RULE WAS MISSING - IT IS NOW ADDED BACK */
 .info-text {
     text-align: center;
     opacity: 0.7;
@@ -71,8 +70,7 @@ body:not(.free-mode) #time-format-indicator {
    ============================================= */
 .top-controls { 
     display: flex; 
-    justify-content: flex-end; /* This pushes buttons to the right */
-    gap: 15px;                 /* This adds space between the buttons */
+    justify-content: space-between; /* CORRECTED: Pushes buttons to opposite ends */
     align-items: center; 
     max-width: 900px; 
     margin: 0 auto 15px auto; 
