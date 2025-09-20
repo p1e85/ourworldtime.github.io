@@ -66,6 +66,30 @@
     </div>
 
     <div id="toast-notification" class="hidden"></div>
+
+    <!-- Unlock Pro Modal (from previous plan) -->
+    <div id="unlock-modal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <button id="close-modal-btn" class="close-btn" title="Close">&times;</button>
+            <h2>Unlock Pro Features</h2>
+            <p>Enter your code below, or purchase one for a one-time fee of $1.00.</p>
+            
+            <div class="modal-section">
+                <input type="text" id="unlock-code-input" placeholder="Enter your backup code...">
+                <button id="submit-code-btn">Unlock with Code</button>
+            </div>
+
+            <div class="modal-separator">
+                <span>OR</span>
+            </div>
+
+            <div class="modal-section">
+                <button id="payment-btn">Pay $1.35</button>
+                <p class="small-text">You will receive your unique backup code via email after a successful payment.</p>
+            </div>
+        </div>
+    </div>
+    
 </body>
 <footer>
     <a href="tos.html" id="tos-link">Terms of Service</a>
