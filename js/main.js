@@ -119,7 +119,7 @@ function changeTimeZone(newIndex) {
 }
 
 function updateAllClocks() {
-    const now = new Date(); // <--- CORRECTED THIS LINE
+    const now = new Date();
     // Update main clock
     if (!infoWrapper.classList.contains('hidden')) {
         const mainZone = timeZones[currentIndex];
@@ -296,15 +296,25 @@ async function initialize() {
     document.body.classList.toggle('free-mode', !isPro);
     proModeToggle.checked = isPro;
 
-    // Load timezones from JSON for all users
+    // Fetch the full list of timezones first for everyone
+    let allTimezones;
     try {
         const response = await fetch('timezones.json');
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-        timeZones = await response.json();
+        allTimezones = await response.json();
     } catch (error) {
-        console.error("Fatal Error: Could not load timezones.json. The application cannot start.", error);
-        document.body.innerHTML = `<div style="text-align: center; padding: 50px; font-family: sans-serif; color: #333;"><h1>Error</h1><p>Could not load required time zone data. Please check your internet connection and try again.</p></div>`;
+        console.error("Fatal Error: Could not load timezones.json.", error);
+        document.body.innerHTML = `<div style="text-align: center; padding: 50px; font-family: sans-serif; color: #333;"><h1>Error</h1><p>Could not load required time zone data. Please try again.</p></div>`;
         return; // Stop execution
+    }
+
+    // Now, assign the correct list based on user mode
+    if (isPro) {
+        // PRO MODE: Use the full list
+        timeZones = allTimezones;
+    } else {
+        // FREE MODE: Use only the first 24 from the fetched list
+        timeZones = allTimezones.slice(0, 24);
     }
     
     // Build the UI
