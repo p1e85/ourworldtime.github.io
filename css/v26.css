@@ -53,9 +53,9 @@ body.evening .top-controls button,
 body.morning .close-btn,
 body.day .close-btn,
 body.evening .close-btn {
-    color: #2c3e50;
+    color: #ffffff; /* Text becomes white to contrast with new dark button */
     border-color: rgba(44, 62, 80, 0.4);
-    background: rgba(44, 62, 80, 0.05); /* Darker, more contrast */
+    background: rgba(44, 62, 80, 0.4); /* Darker, semi-transparent background */
 }
 
 body.morning .top-controls button:hover,
@@ -64,7 +64,7 @@ body.evening .top-controls button:hover,
 body.morning .close-btn:hover,
 body.day .close-btn:hover,
 body.evening .close-btn:hover {
-    background: rgba(44, 62, 80, 0.15); /* Darker hover */
+    background: rgba(44, 62, 80, 0.6); /* Darker hover */
 }
 
 /* Update dial for light mode */
