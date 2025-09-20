@@ -55,7 +55,16 @@ body.free-mode .top-controls button:hover {
 /* =============================================
    Main Layout & Clock Display
    ============================================= */
-.top-controls { display: flex; justify-content: space-between; align-items: center; max-width: 900px; margin: 0 auto 15px auto; padding: 0 10px; box-sizing: border-box; }
+.top-controls { 
+    display: flex; 
+    justify-content: flex-end; /* This pushes buttons to the right */
+    gap: 15px;                 /* This adds space between the buttons */
+    align-items: center; 
+    max-width: 900px; 
+    margin: 0 auto 15px auto; 
+    padding: 0 10px; 
+    box-sizing: border-box; 
+}
 #view-toggle-btn, #format-toggle-btn { position: static; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.3); color: white; width: 50px; height: 50px; border-radius: 50%; cursor: pointer; transition: all 0.2s ease; z-index: 100; }
 #view-toggle-btn { font-size: 1.5em; }
 #format-toggle-btn { font-size: 1.1em; font-weight: bold; }
