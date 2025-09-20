@@ -37,7 +37,63 @@ h1 { font-family: 'Cormorant Garamond', serif; text-align: center; margin: 20px 
 }
 
 /* =============================================
-   NEW: Version Toggle Styles
+   NEW: Light Mode / High Contrast Styles
+   ============================================= */
+body.day {
+    color: #2c3e50; /* A dark, soft black for all text */
+    text-shadow: 1px 1px 4px rgba(255, 255, 255, 0.7); /* A light text shadow for depth */
+}
+
+/* Update buttons and specific elements for light background */
+body.day .top-controls button,
+body.day .close-btn {
+    color: #2c3e50;
+    border-color: rgba(44, 62, 80, 0.3);
+    background: rgba(255, 255, 255, 0.2);
+}
+
+body.day .top-controls button:hover,
+body.day .close-btn:hover {
+    background: rgba(44, 62, 80, 0.1);
+}
+
+/* Update dial for light mode */
+body.day #dial-container {
+    background: rgba(255, 255, 255, 0.25);
+    border-top-color: rgba(44, 62, 80, 0.2);
+}
+
+body.day #dial-pointer {
+    border-top-color: #2c3e50;
+}
+
+body.day .dial-item {
+    color: #2c3e50;
+}
+
+/* Update modal for light mode */
+body.day .modal-content {
+    background: rgba(240, 248, 255, 0.8); /* A light, glassy background */
+    border-color: rgba(44, 62, 80, 0.2);
+    color: #2c3e50;
+}
+body.day #unlock-code-input {
+    background: rgba(255, 255, 255, 0.5);
+    border-color: rgba(44, 62, 80, 0.3);
+    color: #2c3e50;
+}
+body.day #unlock-code-input::placeholder {
+    color: rgba(44, 62, 80, 0.5);
+}
+
+/* Update TOS link */
+body.day #tos-link {
+    color: #2c3e50;
+}
+
+
+/* =============================================
+   Version Toggle Styles
    ============================================= */
 #version-toggle { display: flex; justify-content: center; align-items: center; gap: 10px; margin-bottom: 20px; font-family: sans-serif; }
 .switch { position: relative; display: inline-block; width: 60px; height: 34px; }
@@ -47,7 +103,7 @@ h1 { font-family: 'Cormorant Garamond', serif; text-align: center; margin: 20px 
 input:checked + .slider { background-color: #89d8f8; }
 input:checked + .slider:before { transform: translateX(26px); }
 
-/* NEW: Style for the "locked" state of the toggle */
+/* Style for the "locked" state of the toggle */
 body.free-mode #version-toggle .slider::after {
     content: '🔒';
     position: absolute;
