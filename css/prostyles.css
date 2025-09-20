@@ -28,7 +28,7 @@ h1 { font-family: 'Cormorant Garamond', serif; text-align: center; margin: 20px 
 .info-text { text-align: center; opacity: 0.7; padding: 20px 40px; max-width: 800px; margin: 0 auto; }
 
 /* =============================================
-   NEW: Developer Toggle
+   Developer Toggle
    ============================================= */
 #dev-toggle { display: flex; justify-content: center; align-items: center; gap: 10px; margin-bottom: 20px; font-family: sans-serif; }
 .switch { position: relative; display: inline-block; width: 60px; height: 34px; }
@@ -39,11 +39,17 @@ input:checked + .slider { background-color: #89d8f8; }
 input:checked + .slider:before { transform: translateX(26px); }
 
 /* =============================================
-   NEW: Free/Pro Mode Logic
+   Free/Pro Mode Logic
    ============================================= */
-/* In free mode, hide the Pro-specific controls */
+/* In free mode, make Pro controls visible but appear disabled */
 body.free-mode .top-controls {
-    display: none !important;
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* We also prevent hover effects on the buttons inside when in free mode */
+body.free-mode .top-controls button:hover {
+    background: rgba(255, 255, 255, 0.1); /* Keep original background */
 }
 
 /* =============================================
