@@ -7,6 +7,7 @@ let isPro = false; // Master flag for Pro features
 
 // --- DOM ELEMENTS ---
 const proModeToggle = document.getElementById('pro-mode-toggle');
+const topControls = document.querySelector('.top-controls');
 const infoWrapper = document.getElementById('clock-info-wrapper');
 const cityNameTextElement = document.getElementById('city-name-text');
 const timeDisplayElement = document.getElementById('time-display');
@@ -318,9 +319,11 @@ async function initialize() {
     startClock();
     setupGestures();
 
-    // Setup Pro Features if enabled
+    // Setup Pro Features or Free Mode Placeholders
     if (isPro) {
         setupProFeatures();
+    } else {
+        setupFreeModeListeners();
     }
     
     // Initial animation hint for the dial
@@ -328,6 +331,13 @@ async function initialize() {
         dialTrack.classList.add('nudge');
         setTimeout(() => dialTrack.classList.remove('nudge'), 500);
     }, 1500);
+}
+
+// NEW function for Free Mode
+function setupFreeModeListeners() {
+    topControls.addEventListener('click', () => {
+        showToast("⭐ Unlocks in Pro Version!");
+    });
 }
 
 function setupProFeatures() {
