@@ -152,7 +152,7 @@ function startClock() {
     clockInterval = setInterval(updateAllClocks, 1000);
 }
 
-// --- GESTURE HANDLING (Combined from gestures.js) ---
+// --- GESTURE HANDLING ---
 function setupGestures() {
     const clockAndDialHammer = new Hammer(document.getElementById('dial-container'));
     clockAndDialHammer.get('pan').set({ direction: Hammer.DIRECTION_HORIZONTAL });
@@ -296,25 +296,17 @@ async function initialize() {
     document.body.classList.toggle('free-mode', !isPro);
     proModeToggle.checked = isPro;
 
-    // Fetch the full list of timezones first for everyone
-    let allTimezones;
+    // Determine which JSON file to load
+    const jsonFile = isPro ? 'timezones_pro.json' : 'timezones_free.json';
+    
     try {
-        const response = await fetch('timezones.json');
+        const response = await fetch(jsonFile);
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-        allTimezones = await response.json();
+        timeZones = await response.json();
     } catch (error) {
-        console.error("Fatal Error: Could not load timezones.json.", error);
+        console.error(`Fatal Error: Could not load ${jsonFile}.`, error);
         document.body.innerHTML = `<div style="text-align: center; padding: 50px; font-family: sans-serif; color: #333;"><h1>Error</h1><p>Could not load required time zone data. Please try again.</p></div>`;
         return; // Stop execution
-    }
-
-    // Now, assign the correct list based on user mode
-    if (isPro) {
-        // PRO MODE: Use the full list
-        timeZones = allTimezones;
-    } else {
-        // FREE MODE: Use only the first 24 from the fetched list
-        timeZones = allTimezones.slice(0, 24);
     }
     
     // Build the UI
