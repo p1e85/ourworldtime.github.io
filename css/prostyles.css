@@ -95,6 +95,14 @@ body:not(.free-mode) #time-format-indicator {
 #date-display { font-family: sans-serif; font-size: 1.5em; opacity: 0.9; margin: 5px 0; }
 .hidden { display: none !important; }
 
+body.free-mode #version-toggle .slider::after {
+    content: '🔒';
+    position: absolute;
+    right: 8px;
+    top: 6px;
+    font-size: 16px;
+}
+
 /* style for the static 24h indicator */
 #time-format-indicator {
     font-family: sans-serif;
