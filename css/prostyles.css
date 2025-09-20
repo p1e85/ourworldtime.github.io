@@ -52,12 +52,6 @@ body.free-mode .top-controls button:hover {
     background: rgba(255, 255, 255, 0.1); /* Keep original background */
 }
 
-/* Hide the static 24h indicator when in Pro Mode */
-body:not(.free-mode) #time-format-indicator {
-    display: none;
-}
-
-
 /* =============================================
    Main Layout & Clock Display
    ============================================= */
@@ -79,18 +73,6 @@ body:not(.free-mode) #time-format-indicator {
 #utc-offset { font-family: sans-serif; font-size: 1.2em; opacity: 0.8; margin: 0; }
 #date-display { font-family: sans-serif; font-size: 1.5em; opacity: 0.9; margin: 5px 0; }
 .hidden { display: none !important; }
-
-/* NEW style for the static 24h indicator */
-#time-format-indicator {
-    font-family: sans-serif;
-    font-size: 1em;
-    opacity: 0.6;
-    border: 1px solid rgba(255, 255, 255, 0.4);
-    padding: 2px 8px;
-    border-radius: 5px;
-    display: inline-block;
-    margin-top: 10px;
-}
 
 /* =============================================
    PRO FEATURE: Multi-Clock Grid
