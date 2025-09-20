@@ -17,12 +17,9 @@ const mainFavoriteIcon = document.getElementById('main-favorite-icon');
 const dialContainer = document.getElementById('dial-container');
 const dialTrack = document.getElementById('dial-track');
 const toastElement = document.getElementById('toast-notification');
-
-// Pro-only DOM Elements
 const multiClockGrid = document.getElementById('multi-clock-grid');
 const viewToggleBtn = document.getElementById('view-toggle-btn');
 const formatToggleBtn = document.getElementById('format-toggle-btn');
-
 
 // --- PRO FEATURE VARIABLES ---
 let dashboardClocks = [];
@@ -30,7 +27,7 @@ let localUserIana = '';
 let dashboardElementsCache = {};
 let use12HourFormat = false;
 
-// --- CORE FUNCTIONS (Shared Logic) ---
+// --- CORE FUNCTIONS ---
 function updateStaticInfo(zone) {
     if (!zone) return;
     const now = new Date();
@@ -38,14 +35,11 @@ function updateStaticInfo(zone) {
     const dateString = now.toLocaleDateString('en-US', dateOptions);
     const timeZoneFormatter = new Intl.DateTimeFormat('en-US', { timeZone: zone.iana, timeZoneName: 'shortOffset' });
     const offsetString = (timeZoneFormatter.formatToParts(now).find(part => part.type === 'timeZoneName') || {}).value || '';
-    
     utcOffsetElement.textContent = offsetString.replace('GMT', 'UTC');
     cityNameTextElement.textContent = zone.name;
     dateDisplayElement.textContent = dateString;
-    
     const favoriteIana = localStorage.getItem('favoriteTimeZone');
     mainFavoriteIcon.classList.toggle('hidden', favoriteIana !== zone.iana);
-    
     const hour = parseInt(now.toLocaleTimeString('en-US', { timeZone: zone.iana, hour: '2-digit', hour12: false }));
     updateBackground(hour);
 }
@@ -57,14 +51,15 @@ function updateBackground(hour) {
     else if (hour >= 11 && hour < 17) newClass = 'day';
     else if (hour >= 17 && hour < 21) newClass = 'evening';
     else newClass = 'night';
-    if (body.className !== newClass) body.className = newClass;
+    const timeClasses = ['morning', 'day', 'evening', 'night'];
+    body.classList.remove(...timeClasses);
+    body.classList.add(newClass);
 }
 
 function updateDialPosition() {
     const containerWidth = dialContainer.offsetWidth;
     const offset = (containerWidth / 2) - (dialItemWidth / 2) - (currentIndex * dialItemWidth);
     dialTrack.style.transform = `translateX(${offset}px)`;
-    
     const allItems = document.querySelectorAll('.dial-item');
     const favoriteIana = localStorage.getItem('favoriteTimeZone');
     allItems.forEach((item) => {
@@ -93,7 +88,6 @@ function buildDial() {
         item.addEventListener('click', () => changeTimeZone(index));
         dialTrack.appendChild(item);
     });
-    // Recalculate width after building
     const firstDialItem = dialTrack.querySelector('.dial-item');
     if (firstDialItem) dialItemWidth = firstDialItem.offsetWidth;
 }
@@ -120,17 +114,14 @@ function changeTimeZone(newIndex) {
 
 function updateAllClocks() {
     const now = new Date();
-    // Update main clock
     if (!infoWrapper.classList.contains('hidden')) {
         const mainZone = timeZones[currentIndex];
         if (mainZone) {
-            // Use 12-hour format only if Pro is enabled and the user has selected it
             const is12Hour = isPro && use12HourFormat;
             const timeOptions = { timeZone: mainZone.iana, hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: is12Hour };
             timeDisplayElement.textContent = now.toLocaleTimeString('en-US', timeOptions);
         }
     }
-    // Update dashboard clocks (only if Pro)
     if (isPro) {
         for (const iana in dashboardElementsCache) {
             const elements = dashboardElementsCache[iana];
@@ -152,12 +143,10 @@ function startClock() {
     clockInterval = setInterval(updateAllClocks, 1000);
 }
 
-// --- GESTURE HANDLING ---
 function setupGestures() {
     const clockAndDialHammer = new Hammer(document.getElementById('dial-container'));
     clockAndDialHammer.get('pan').set({ direction: Hammer.DIRECTION_HORIZONTAL });
     clockAndDialHammer.get('swipe').set({ direction: Hammer.DIRECTION_VERTICAL });
-
     clockAndDialHammer.on('panstart panmove panend', (ev) => {
         dialTrack.style.transition = 'none';
         if (ev.type === 'panstart') {
@@ -177,9 +166,7 @@ function setupGestures() {
             changeTimeZone(newIndex);
         }
     });
-
     clockAndDialHammer.on('swipedown', () => changeTimeZoneToLocal());
-
     clockAndDialHammer.on('swipeup', () => {
         const favoriteIana = localStorage.getItem('favoriteTimeZone');
         const currentZone = timeZones[currentIndex];
@@ -198,11 +185,8 @@ function setupGestures() {
 function changeTimeZoneToLocal() {
     const localIana = Intl.DateTimeFormat().resolvedOptions().timeZone;
     const localIndex = timeZones.findIndex(tz => tz.iana === localIana);
-    if (localIndex !== -1) {
-        changeTimeZone(localIndex);
-    }
+    if (localIndex !== -1) changeTimeZone(localIndex);
 }
-
 
 // --- PRO-ONLY FUNCTIONS ---
 function createMiniClock(zone) {
@@ -221,16 +205,14 @@ function createMiniClock(zone) {
     deleteBtn.innerHTML = '&times;';
     deleteBtn.title = `Remove ${zone.name}`;
     deleteBtn.addEventListener('click', (e) => {
-        e.stopPropagation(); // Prevent grid click events
+        e.stopPropagation();
         removeClockFromDashboard(zone.iana);
     });
     clockEl.appendChild(nameEl);
     clockEl.appendChild(timeEl);
     clockEl.appendChild(dateEl);
     clockEl.appendChild(utcEl);
-    if (zone.iana !== localUserIana) {
-        clockEl.appendChild(deleteBtn);
-    }
+    if (zone.iana !== localUserIana) clockEl.appendChild(deleteBtn);
     return clockEl;
 }
 
@@ -242,11 +224,7 @@ function renderDashboard() {
         if (zoneData) {
             const clockEl = createMiniClock(zoneData);
             multiClockGrid.appendChild(clockEl);
-            dashboardElementsCache[iana] = {
-                time: clockEl.querySelector('.mini-time'),
-                date: clockEl.querySelector('.mini-date'),
-                utc: clockEl.querySelector('.mini-utc')
-            };
+            dashboardElementsCache[iana] = { time: clockEl.querySelector('.mini-time'), date: clockEl.querySelector('.mini-date'), utc: clockEl.querySelector('.mini-utc') };
         }
     });
     if (dashboardClocks.length < 6) {
@@ -288,108 +266,95 @@ function removeClockFromDashboard(ianaToRemove) {
     showToast(`${zone.name} removed from dashboard.`);
 }
 
-
 // --- INITIALIZATION ---
+
+// CORRECTED: Unified function to handle button setup for both modes
+function setupButtonListeners() {
+    if (isPro) {
+        // PRO MODE SETUP
+        const savedFormat = localStorage.getItem('use12HourFormat');
+        if (savedFormat !== null) use12HourFormat = JSON.parse(savedFormat);
+        
+        const updateFormatButtonText = () => { formatToggleBtn.textContent = use12HourFormat ? '24h' : '12h'; };
+        updateFormatButtonText();
+
+        formatToggleBtn.addEventListener('click', () => {
+            use12HourFormat = !use12HourFormat;
+            localStorage.setItem('use12HourFormat', use12HourFormat);
+            updateFormatButtonText();
+            updateAllClocks();
+        });
+
+        viewToggleBtn.addEventListener('click', () => {
+            const isSingleViewActive = !infoWrapper.classList.contains('hidden');
+            if (isSingleViewActive) {
+                renderDashboard();
+                infoWrapper.classList.add('hidden');
+                multiClockGrid.classList.remove('hidden');
+                viewToggleBtn.innerHTML = '🔳';
+                viewToggleBtn.title = 'View Single Clock';
+            } else {
+                infoWrapper.classList.remove('hidden');
+                multiClockGrid.classList.add('hidden');
+                viewToggleBtn.innerHTML = '▦';
+                viewToggleBtn.title = 'View Dashboard';
+            }
+        });
+
+        // Load saved dashboard clocks
+        const savedClocks = JSON.parse(localStorage.getItem('dashboardClocks'));
+        const defaultClocks = [localUserIana, 'America/New_York', 'Europe/London', 'Asia/Tokyo'];
+        dashboardClocks = (savedClocks && savedClocks.length > 0) ? savedClocks : [...new Set(defaultClocks)];
+        if (!dashboardClocks.includes(localUserIana)) dashboardClocks.unshift(localUserIana);
+
+    } else {
+        // FREE MODE SETUP
+        formatToggleBtn.textContent = '24h';
+        topControls.addEventListener('click', () => {
+            showToast("⭐ Unlocks in Pro Version!");
+        });
+    }
+}
+
 async function initialize() {
-    // Check mode first
     isPro = localStorage.getItem('isPro') === 'true';
     document.body.classList.toggle('free-mode', !isPro);
     proModeToggle.checked = isPro;
 
-    // Determine which JSON file to load
-    const jsonFile = isPro ? 'timezones_pro.json' : 'timezones_free.json';
+    const jsonFileToLoad = isPro ? 'timezones_pro.json' : 'timezones_free.json';
     
     try {
-        const response = await fetch(jsonFile);
+        const response = await fetch(jsonFileToLoad);
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
         timeZones = await response.json();
     } catch (error) {
-        console.error(`Fatal Error: Could not load ${jsonFile}.`, error);
+        console.error(`Fatal Error: Could not load ${jsonFileToLoad}.`, error);
         document.body.innerHTML = `<div style="text-align: center; padding: 50px; font-family: sans-serif; color: #333;"><h1>Error</h1><p>Could not load required time zone data. Please try again.</p></div>`;
-        return; // Stop execution
+        return;
     }
     
-    // Build the UI
     buildDial();
     localUserIana = Intl.DateTimeFormat().resolvedOptions().timeZone;
     let initialIndex = timeZones.findIndex(tz => tz.iana === localUserIana);
-    if (initialIndex === -1) {
-        initialIndex = timeZones.findIndex(tz => tz.iana === 'Europe/London') || 0;
-    }
+    if (initialIndex === -1) initialIndex = timeZones.findIndex(tz => tz.iana === 'Europe/London') || 0;
     
+    // Call the unified setup function
+    setupButtonListeners();
+
     changeTimeZone(initialIndex);
     startClock();
     setupGestures();
-
-    // Setup Pro Features or Free Mode Placeholders
-    if (isPro) {
-        setupProFeatures();
-    } else {
-        setupFreeModeListeners();
-    }
     
-    // Initial animation hint for the dial
     setTimeout(() => {
         dialTrack.classList.add('nudge');
         setTimeout(() => dialTrack.classList.remove('nudge'), 500);
     }, 1500);
 }
 
-// NEW function for Free Mode
-function setupFreeModeListeners() {
-    topControls.addEventListener('click', () => {
-        showToast("⭐ Unlocks in Pro Version!");
-    });
-}
-
-function setupProFeatures() {
-    // Load saved dashboard clocks
-    const savedClocks = JSON.parse(localStorage.getItem('dashboardClocks'));
-    const defaultClocks = [localUserIana, 'America/New_York', 'Europe/London', 'Asia/Tokyo'];
-    dashboardClocks = (savedClocks && savedClocks.length > 0) ? savedClocks : [...new Set(defaultClocks)];
-    if (!dashboardClocks.includes(localUserIana)) {
-        dashboardClocks.unshift(localUserIana);
-    }
-
-    // Load saved time format
-    const savedFormat = localStorage.getItem('use12HourFormat');
-    if (savedFormat !== null) use12HourFormat = JSON.parse(savedFormat);
-    
-    // Setup Pro Event Listeners
-    const updateFormatButtonText = () => { formatToggleBtn.textContent = use12HourFormat ? '24h' : '12h'; };
-    updateFormatButtonText();
-    
-    formatToggleBtn.addEventListener('click', () => {
-        use12HourFormat = !use12HourFormat;
-        localStorage.setItem('use12HourFormat', use12HourFormat);
-        updateFormatButtonText();
-        updateAllClocks();
-    });
-
-    viewToggleBtn.addEventListener('click', () => {
-        const isSingleViewActive = !infoWrapper.classList.contains('hidden');
-        if (isSingleViewActive) {
-            renderDashboard();
-            infoWrapper.classList.add('hidden');
-            multiClockGrid.classList.remove('hidden');
-            viewToggleBtn.innerHTML = '🔳';
-            viewToggleBtn.title = 'View Single Clock';
-        } else {
-            infoWrapper.classList.remove('hidden');
-            multiClockGrid.classList.add('hidden');
-            viewToggleBtn.innerHTML = '▦';
-            viewToggleBtn.title = 'View Dashboard';
-        }
-    });
-}
-
-// Add listener for the dev toggle
 proModeToggle.addEventListener('change', () => {
     isPro = proModeToggle.checked;
     localStorage.setItem('isPro', isPro);
-    // Reload the app to apply the new settings from scratch
     window.location.reload();
 });
-
 
 document.addEventListener('DOMContentLoaded', initialize);
