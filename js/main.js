@@ -119,7 +119,7 @@ function changeTimeZone(newIndex) {
 }
 
 function updateAllClocks() {
-    const now = new new Date();
+    const now = new Date(); // <--- CORRECTED THIS LINE
     // Update main clock
     if (!infoWrapper.classList.contains('hidden')) {
         const mainZone = timeZones[currentIndex];
