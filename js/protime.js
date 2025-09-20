@@ -300,7 +300,7 @@ async function initialize() {
     document.body.classList.toggle('free-mode', !isPro);
     proModeToggle.checked = isPro;
 
-    // Determine which JSON file to load based on the user's status
+    // Determine which JSON file to load
     const jsonFileToLoad = isPro ? 'timezones_pro.json' : 'timezones_free.json';
     
     try {
@@ -341,6 +341,9 @@ async function initialize() {
 
 // Function for Free Mode placeholder interactions
 function setupFreeModeListeners() {
+    // Set the disabled button text to "24h"
+    formatToggleBtn.textContent = '24h';
+    
     topControls.addEventListener('click', () => {
         showToast("⭐ Unlocks in Pro Version!");
     });
