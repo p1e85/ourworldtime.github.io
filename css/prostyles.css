@@ -6,6 +6,8 @@
 @keyframes animateGradient { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
 @keyframes fadeinout { 0%, 100% { top: -100px; opacity: 0; } 10%, 90% { top: 30px; opacity: 1; } }
 @keyframes nudge { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(-20px); } }
+@keyframes modal-fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes modal-slide-in { from { transform: translate(-50%, -70%); opacity: 0; } to { transform: translate(-50%, -50%); opacity: 1; } }
 
 body {
     background-size: 400% 400%;
@@ -35,9 +37,95 @@ h1 { font-family: 'Cormorant Garamond', serif; text-align: center; margin: 20px 
 }
 
 /* =============================================
-   Developer Toggle
+   Light Mode / High Contrast Styles
    ============================================= */
-#dev-toggle { display: flex; justify-content: center; align-items: center; gap: 10px; margin-bottom: 20px; font-family: sans-serif; }
+body.morning,
+body.day,
+body.evening {
+    color: #2c3e50; /* A dark, soft black for all text */
+    text-shadow: 1px 1px 4px rgba(255, 255, 255, 0.7); /* A light text shadow for depth */
+}
+
+/* Update buttons and specific elements for light background */
+body.morning #view-toggle-btn, body.morning #format-toggle-btn,
+body.day #view-toggle-btn, body.day #format-toggle-btn,
+body.evening #view-toggle-btn, body.evening #format-toggle-btn,
+body.morning .close-btn,
+body.day .close-btn,
+body.evening .close-btn {
+    color: #ffffff; /* Text becomes white to contrast with new dark button */
+    border-color: rgba(44, 62, 80, 0.4);
+    background: rgba(44, 62, 80, 0.4); /* Darker, semi-transparent background */
+}
+
+body.morning #view-toggle-btn:hover, body.morning #format-toggle-btn:hover,
+body.day #view-toggle-btn:hover, body.day #format-toggle-btn:hover,
+body.evening #view-toggle-btn:hover, body.evening #format-toggle-btn:hover,
+body.morning .close-btn:hover,
+body.day .close-btn:hover,
+body.evening .close-btn:hover {
+    background: rgba(44, 62, 80, 0.6); /* Darker hover */
+}
+
+/* Update dial for light mode */
+body.morning #dial-container,
+body.day #dial-container,
+body.evening #dial-container {
+    background: rgba(255, 255, 255, 0.25);
+    border-top-color: rgba(44, 62, 80, 0.2);
+}
+
+body.morning #dial-pointer,
+body.day #dial-pointer,
+body.evening #dial-pointer {
+    border-top-color: #2c3e50;
+}
+
+body.morning .dial-item,
+body.day .dial-item,
+body.evening .dial-item {
+    color: #2c3e50;
+}
+
+/* Update modal for light mode */
+body.morning .modal-content,
+body.day .modal-content,
+body.evening .modal-content {
+    background: rgba(240, 248, 255, 0.8); /* A light, glassy background */
+    border-color: rgba(44, 62, 80, 0.2);
+    color: #2c3e50;
+}
+
+body.morning #unlock-code-input,
+body.day #unlock-code-input,
+body.evening #unlock-code-input {
+    background: rgba(255, 255, 255, 0.5);
+    border-color: rgba(44, 62, 80, 0.3);
+    color: #2c3e50;
+}
+body.morning #unlock-code-input::placeholder,
+body.day #unlock-code-input::placeholder,
+body.evening #unlock-code-input::placeholder {
+    color: rgba(44, 62, 80, 0.5);
+}
+
+/* Update Footer links */
+body.morning .footer-link,
+body.day .footer-link,
+body.evening .footer-link {
+    color: #2c3e50;
+}
+body.morning .footer-separator,
+body.day .footer-separator,
+body.evening .footer-separator {
+    color: #2c3e50;
+}
+
+
+/* =============================================
+   Version Toggle Styles
+   ============================================= */
+#version-toggle { display: flex; justify-content: center; align-items: center; gap: 10px; margin-bottom: 20px; font-family: sans-serif; }
 .switch { position: relative; display: inline-block; width: 60px; height: 34px; }
 .switch input { opacity: 0; width: 0; height: 0; }
 .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #7b68b6; transition: .4s; border-radius: 34px; }
@@ -45,32 +133,34 @@ h1 { font-family: 'Cormorant Garamond', serif; text-align: center; margin: 20px 
 input:checked + .slider { background-color: #89d8f8; }
 input:checked + .slider:before { transform: translateX(26px); }
 
+/* Style for the "locked" state of the toggle */
+body.free-mode #version-toggle .slider::after {
+    content: '🔒';
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 16px;
+    opacity: 0.7;
+}
+
 /* =============================================
    Free/Pro Mode Logic
    ============================================= */
-/* In free mode, make Pro controls visible but appear disabled */
 body.free-mode .top-controls {
     opacity: 0.5;
     cursor: not-allowed;
 }
-
-/* We also prevent hover effects on the buttons inside when in free mode */
 body.free-mode .top-controls button:hover {
-    background: rgba(255, 255, 255, 0.1); /* Keep original background */
+    background: rgba(255, 255, 255, 0.1);
 }
-
-/* Hide the static 24h indicator when in Pro Mode */
-body:not(.free-mode) #time-format-indicator {
-    display: none;
-}
-
 
 /* =============================================
    Main Layout & Clock Display
    ============================================= */
 .top-controls { 
     display: flex; 
-    justify-content: space-between; /* CORRECTED: Pushes buttons to opposite ends */
+    justify-content: space-between;
     align-items: center; 
     max-width: 900px; 
     margin: 0 auto 15px auto; 
@@ -94,26 +184,6 @@ body:not(.free-mode) #time-format-indicator {
 #utc-offset { font-family: sans-serif; font-size: 1.2em; opacity: 0.8; margin: 0; }
 #date-display { font-family: sans-serif; font-size: 1.5em; opacity: 0.9; margin: 5px 0; }
 .hidden { display: none !important; }
-
-body.free-mode #version-toggle .slider::after {
-    content: '🔒';
-    position: absolute;
-    right: 8px;
-    top: 6px;
-    font-size: 16px;
-}
-
-/* style for the static 24h indicator */
-#time-format-indicator {
-    font-family: sans-serif;
-    font-size: 1em;
-    opacity: 0.6;
-    border: 1px solid rgba(255, 255, 255, 0.4);
-    padding: 2px 8px;
-    border-radius: 5px;
-    display: inline-block;
-    margin-top: 10px;
-}
 
 /* =============================================
    PRO FEATURE: Multi-Clock Grid
@@ -147,29 +217,135 @@ body.free-mode #version-toggle .slider::after {
 #toast-notification { position: fixed; top: 30px; left: 50%; transform: translateX(-50%); background-color: rgba(30, 30, 30, 0.9); backdrop-filter: blur(5px); color: white; padding: 15px 25px; border-radius: 50px; z-index: 1000; font-family: sans-serif; }
 #toast-notification.show { animation: fadeinout 4s ease-in-out; }
 
-
 /* =============================================
    Responsive Styles
    ============================================= */
-#time-display {
-    font-size: 18vw;
-}
-
+#time-display { font-size: 18vw; }
 @media (max-width: 768px) {
-    #clock-container {
-        min-height: 500px;
-        padding-bottom: 20px;
-    }
-    #multi-clock-grid {
-        grid-template-columns: 1fr;
-    }
-    .mini-clock .mini-time {
-        font-size: 10vw;
-    }
+    #clock-container { min-height: 500px; padding-bottom: 20px; }
+    #multi-clock-grid { grid-template-columns: 1fr; }
+    .mini-clock .mini-time { font-size: 10vw; }
+}
+@media only screen and (min-width: 769px) {
+    #time-display { font-size: 6em; }
 }
 
-@media only screen and (min-width: 769px) {
-    #time-display {
-        font-size: 6em;
-    }
+/* =============================================
+   Footer & TOS Link
+   ============================================= */
+footer {
+    text-align: center;
+    padding: 20px 0;
+    font-family: sans-serif;
+    position: fixed;
+    bottom: -20px;
+    width: 100%;
+    left: 0;
 }
+.footer-link {
+    color: white;
+    font-size: 0.8em;
+    opacity: 0.6;
+    text-decoration: none;
+    transition: opacity 0.2s ease;
+    margin: 0 5px;
+}
+.footer-link:hover {
+    opacity: 1;
+}
+.footer-separator {
+    opacity: 0.6;
+    color: white;
+}
+
+/* =============================================
+   Unlock Pro Modal Styles
+   ============================================= */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(10px);
+    z-index: 2000;
+    animation: modal-fade-in 0.3s ease-out;
+}
+.modal-content {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(30, 30, 30, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 15px;
+    padding: 30px 40px;
+    width: 90%;
+    max-width: 400px;
+    color: white;
+    text-align: center;
+    font-family: sans-serif;
+    animation: modal-slide-in 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+.close-btn {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    background: none;
+    border: none;
+    color: white;
+    font-size: 2em;
+    opacity: 0.5;
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+}
+.close-btn:hover { opacity: 1; }
+.modal-content h2 { margin-top: 0; font-family: 'Cormorant Garamond', serif; font-size: 2em; }
+.modal-section { margin-top: 25px; }
+#unlock-code-input {
+    width: 100%;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    background: rgba(0, 0, 0, 0.3);
+    color: white;
+    font-size: 1em;
+    box-sizing: border-box;
+    margin-bottom: 10px;
+}
+#submit-code-btn, #payment-btn {
+    width: 100%;
+    padding: 12px;
+    border-radius: 8px;
+    border: none;
+    font-size: 1em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+#submit-code-btn {
+    background: #5c67f2;
+    color: white;
+}
+#payment-btn {
+    background: #34d399;
+    color: white;
+}
+#submit-code-btn:hover { background: #4a54c4; }
+#payment-btn:hover { background: #10b981; }
+.modal-separator {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    margin: 30px 0;
+    opacity: 0.5;
+}
+.modal-separator::before, .modal-separator::after {
+    content: '';
+    flex: 1;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+}
+.modal-separator:not(:empty)::before { margin-right: .25em; }
+.modal-separator:not(:empty)::after { margin-left: .25em; }
+.small-text { font-size: 0.8em; opacity: 0.7; margin-top: 10px; }
