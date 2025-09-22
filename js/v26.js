@@ -254,7 +254,7 @@ function setupModalListeners() {
     });
 
     paymentBtn.addEventListener('click', () => {
-        window.location.href = 'https://www.paypal.com/donate/?hosted_button_id=47J78RQKMNVCJ';
+        window.location.href = 'https://www.paypal.com/ncp/payment/47J78RQKMNVCJ';
     });
 }
 
